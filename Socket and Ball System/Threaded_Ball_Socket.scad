@@ -46,13 +46,13 @@ module ball_and_socket (ballrad, threadod, threadlen, shaftrad, shaftrad2, taper
             translate([0,0,threadlen])
                 cylinder(r1=threadod/2-2,r2=shaftrad2,h=taperlen);
             translate([0,0,threadlen-.5])                
-                for(i=[0:10:360]) 
+                for(i=[0:15:360]) 
                 {
                     rotate([0,0,i]) 
-                        translate([0,threadod/2-2,0])
+                        translate([0,threadod/2-3.8,0])
                             rotate([48,0,0])
                                 rotate([0,0,45])
-                                    cube([1,1,8]);
+                                    cube([2,2,8]);
                     
                 }
 
@@ -85,7 +85,7 @@ module ball_and_socket (ballrad, threadod, threadlen, shaftrad, shaftrad2, taper
 
 module nut (threadod,threadlen,ballrad, shaftlen)
 {
-    translate([threadod*0,0,shaftlen*.45]) //nut
+    translate([threadod*0,0,shaftlen*.5]) //nut
     {
         difference()
         {
