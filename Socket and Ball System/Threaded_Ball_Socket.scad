@@ -21,13 +21,13 @@ ballrad=7;//7
 threadod=20;//20
 threadlen=10;
 shaftrad=3;
-shaftrad2=5.5;//5
+shaftrad2=4;//5
 taperlen=3;//min 3
 shaftlen=20;//min 10?
 
 nut(threadod=20,threadlen=8,ballrad=7,shaftlen=20);
 
-ball_and_socket (ballrad=7, threadod=20, threadlen=8, shaftrad=2.5, shaftrad2=5.5, taperlen=3, shaftlen=20);
+ball_and_socket (ballrad=7, threadod=20, threadlen=8, shaftrad=2.5, shaftrad2=5, taperlen=3, shaftlen=20);
 
 module ball_and_socket (ballrad, threadod, threadlen, shaftrad, shaftrad2, taperlen, shaftlen)
 {
@@ -50,7 +50,7 @@ module ball_and_socket (ballrad, threadod, threadlen, shaftrad, shaftrad2, taper
                 {
                     rotate([0,0,i]) 
                         translate([0,threadod/2-3.8,0])
-                            rotate([48,0,0])
+                            rotate([54,0,0])
                                 rotate([0,0,45])
                                     cube([2,2,8]);
                     
@@ -85,7 +85,7 @@ module ball_and_socket (ballrad, threadod, threadlen, shaftrad, shaftrad2, taper
 
 module nut (threadod,threadlen,ballrad, shaftlen)
 {
-    translate([threadod*0,0,shaftlen*.5]) //nut
+    translate([threadod*0,0,shaftlen*.48]) //nut
     {
         difference()
         {
@@ -94,7 +94,7 @@ module nut (threadod,threadlen,ballrad, shaftlen)
                 translate([0,0,ballrad*.35])                                // Compression Cylinder
                     cylinder(r=threadod/2-1.1, h=ballrad*0.5);         
             }
-            translate([0,0,+ballrad*.8])                                    // Compression Sphere (Cutout)
+            translate([0,0,+ballrad])                                    // Compression Sphere (Cutout)
                 sphere(r=ballrad);     
             translate([0,0,ballrad*.8])                                     // Threads (Cutout)
                 metric_thread (diameter=threadod*1.05, pitch=3, length=threadlen+ballrad*0.7, thread_size=1.9, groove=true, internal=true);
