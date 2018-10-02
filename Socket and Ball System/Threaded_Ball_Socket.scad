@@ -27,7 +27,7 @@ shaftlen=20;//min 10?
 
 nut(threadod=20,threadlen=8,ballrad=7,shaftlen=20);
 
-ball_and_socket (ballrad=7, threadod=20, threadlen=8, shaftrad=2.5, shaftrad2=5, taperlen=3, shaftlen=20);
+ball_and_socket (ballrad=7, threadod=20, threadlen=8, shaftrad=3, shaftrad2=5, taperlen=3, shaftlen=20);
 
 module ball_and_socket (ballrad, threadod, threadlen, shaftrad, shaftrad2, taperlen, shaftlen)
 {
@@ -55,8 +55,6 @@ module ball_and_socket (ballrad, threadod, threadlen, shaftrad, shaftrad2, taper
                                     cube([2,2,8]);
                     
                 }
-
-
             // Shaft
             translate([0,0,threadlen+taperlen])
                 cylinder(r1=shaftrad2,r2=shaftrad,h=shaftlen);
@@ -71,13 +69,12 @@ module ball_and_socket (ballrad, threadod, threadlen, shaftrad, shaftrad2, taper
                     cube([20,20,4]);
             }
         }
-        // Hollow Inside
-        translate([0,0,ballrad*0.86-2])
-            cylinder(r1=shaftrad2-1.6,r2=shaftrad-1.6,h=taperlen+shaftlen+ballrad*2);
-
-                translate([0,0,threadlen+taperlen+shaftlen+ballrad/2])
-                    sphere(r=ballrad-2);      //++++++++++++++MAIN BALL SIZE
-                        }
+        // Hollow Inside --- cOMMENTED OUT FOR Structural Strength
+        //   translate([0,0,ballrad*0.86-2])
+        //       cylinder(r1=shaftrad2-2,r2=shaftrad-2,h=taperlen+shaftlen+ballrad*2);
+        translate([0,0,threadlen+taperlen+shaftlen+ballrad/2])
+            sphere(r=ballrad-2);      //++++++++++++++MAIN BALL SIZE
+        }
 }
 
 
