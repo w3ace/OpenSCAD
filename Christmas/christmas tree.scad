@@ -2,7 +2,7 @@
  * Christmas Tree Generator
  * By Craig Wood
  *
- * Copyright 2017 Dan Kirshner - dan_kirshner@yahoo.com
+ * Copyright 2019 Craig Wood - http://github.com/w3ace
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,21 +17,49 @@
 
  */
 
-branch(size=80, x=40, y=40);
-branch(size=40, x=100, y=40);
+height=66;
+thickness=4;
 
+trunk(height=height, thickness=thickness);
+branch(height=height*.90, x=height*1.25, y=height*.95, thickness=thickness);
+branch(height=height*.75, x=height*.75, y=height*2.3, thickness=thickness);
+branch(height=height*.6, x=height*1.2, y=height*1.7, thickness=thickness);
+branch(height=height*.45, x=height*.7, y=height*1.65, thickness=thickness);
+branch(height=height*.3, x=height*1.25, y=height*2.2, thickness=thickness);
 
-/* Variance for the branch polygons */
+// Variance for the branch polygons 
 
-function variance (size) = rands(-size,size,1)[0]/10;
+function variance (height) = rands(-height,height,1)[0]/10;
 
-/* Module to create a horizontal branch */
+// Make trunk pieces
 
-module branch (size=80, x=0, y=0)
+module trunk (height=66, thickness=2)
+{
+	x = height/2;
+	y = height/2;
+
+	difference()
+	{
+		linear_extrude (height=thickness)
+		{
+			polygon(points=[
+				[x,y],
+				[x+height/3,y],
+				[x+height/6,y+height]
+			]);
+		}
+		translate([x+height/6,y+height*3/4,thickness/2])
+			cube([2.4,height/2,thickness],true);
+	}
+}
+
+// Module to create a horizontal branch
+
+module branch (height=80, x=0, y=0, thickness=2)
 {
 	p = rands(7,11,1)[0];
 
-	/* Put branch in proper location */
+	// Put branch in proper location 
 	translate ([x,y,0])
 	{
 		difference() 
@@ -39,32 +67,27 @@ module branch (size=80, x=0, y=0)
 			// Random number of branches
 			for(i=[360/p:390/p:390]) 
 			{
-
 				rotate([0,0,i])
-				linear_extrude (height=2)
+				linear_extrude (height=thickness)
 				{
 				polygon(points=[
-				 				[-(size/5)+variance(size/2),(size/5)+variance(size/2)],	
-								[(size/5)+variance(size/2),-(size/5)+variance(size/2)],
-				 	  		[(size/3)+variance(size/4),(size/3)+variance(size/4)]
+				 				[-(height/5)+variance(height/2),(height/5)+variance(height/2)],	
+								[(height/5)+variance(height/2),-(height/5)+variance(height/2)],
+				 	  		[(height/3)+variance(height/4),(height/3)+variance(height/4)]
 						]);
 				}
 			}
 
 			// Trunk Slot
 			rotate ([0,0,rands(1,90,1)[0]])
-			translate([0,0,1])
+			translate([0,0,thickness/2])
 			union ()
 			{
-				cube([2.4,size/4,2],true);
+				cube([2.4,height/4,thickness],true);
 				rotate([0,0,90])
-					cube([2.4,size/4,2],true);				
+					cube([2.4,height/4,thickness],true);				
 			}
-
 		}
-
 	}
-
-
 }
 
