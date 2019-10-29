@@ -18,27 +18,84 @@
  */
 
 height=60;
-thickness=3;
+thickness=1.4;
 slop=.4;
 
 bottom_trunk(height=height, thickness=thickness, slop=slop);
 top_trunk(height=height, thickness=thickness, slop=slop);
-branch(height=height*.90, vertices=7, x=height*1.35, y=height*.9, thickness=thickness, slop=slop);
-branch(height=height*.75, vertices=7, x=height*.7, y=height*2.3, thickness=thickness, slop=slop);
-branch(height=height*.6, vertices=6, x=height*1.2, y=height*1.65, thickness=thickness, slop=slop);
-branch(height=height*.5, vertices=6, x=height*.65, y=height*1.7, thickness=thickness, slop=slop);
-branch(height=height*.4, vertices=5, x=height*1.25, y=height*2.15, thickness=thickness, slop=slop);
+branch(height=height*.90, vertices=7, x=height*1.3, y=height*.8, thickness=thickness, slop=slop);
+branch(height=height*.75, vertices=7, x=height*1.15, y=height*1.6, thickness=thickness, slop=slop);
+branch(height=height*.6, vertices=6, x=height*1.1, y=height*2.3, thickness=thickness, slop=slop);
+branch(height=height*.5, vertices=6, x=height*.6, y=height*2.05, thickness=thickness, slop=slop);
+branch(height=height*.4, vertices=5, x=height*.55, y=height*1.55, thickness=thickness, slop=slop);
+
+outer_frame(height=height);
 
 // Variance for the branch polygons 
 
 function variance (height) = rands(-height,height,1)[0]/10;
 
+// Create Outside Frame
+
+module outer_frame (height=66)
+{
+
+	width_multiplier = 1.25;
+	height_multiplier = 2.05;
+	arc_distance = height/5;
+	frame_radius = 2;
+
+	difference()
+	{
+		union()
+		{
+
+			translate([height/4,height/4+arc_distance,0])
+				rotate([270,90,0])
+					cylinder(r=frame_radius,h=height*height_multiplier);
+			translate([height/4+arc_distance,height/4,0])
+				rotate([0,90,0])
+					cylinder(r=frame_radius,h=height*width_multiplier);
+			translate([height/4+height*width_multiplier+arc_distance*2,height/4+arc_distance,0])
+				rotate([270,90,0])
+					cylinder(r=frame_radius,h=height*height_multiplier);
+			translate([height/4+arc_distance,height/4+height*height_multiplier+arc_distance*2,0])
+				rotate([0,90,0])
+					cylinder(r=frame_radius,h=height*width_multiplier);
+
+			translate([height/4+arc_distance,height/4+arc_distance,0])
+				rotate ([0,0,180]) 
+					rotate_extrude(angle=90, convexity=20)
+		   			translate([arc_distance, 0]) 
+		   					circle(frame_radius);
+			translate([height/4+arc_distance+height*width_multiplier,height/4+arc_distance,0])
+				rotate ([0,0,270]) 
+					rotate_extrude(angle=90, convexity=20)
+		   			translate([arc_distance, 0]) 
+		   					circle(frame_radius);
+			translate([height/4+arc_distance+height*width_multiplier,height/4+height*height_multiplier+arc_distance,0])
+					rotate_extrude(angle=90, convexity=20)
+		   			translate([arc_distance, 0]) 
+		   					circle(frame_radius);
+			translate([height/4+arc_distance,height/4+height*height_multiplier+arc_distance,0])
+				rotate ([0,0,90]) 
+					rotate_extrude(angle=90, convexity=20)
+		   			translate([arc_distance, 0]) 
+		   					circle(frame_radius);
+		}
+		translate([0,0,-frame_radius])
+			cube([height/4+arc_distance+height*width_multiplier+arc_distance*2+frame_radius*2,
+						height/4+height*height_multiplier+arc_distance+arc_distance*2+frame_radius*2,frame_radius]);
+	}
+}
+
+
 // Make trunk pieces
 
 module bottom_trunk (height=66, thickness=2, slop=.4)
 {
-	x = height/2;
-	y = height/2;
+	x = height/2.5;
+	y = height/2.5;
 
 
 	difference()
@@ -52,7 +109,7 @@ module bottom_trunk (height=66, thickness=2, slop=.4)
 			]);
 		}
 		translate([x+height/6,y+height*3/4,thickness/2])
-			cube([thickness+slop/2,height/2,thickness],true);
+			cube([thickness+slop/2+.2,height/2,thickness+.4],true);
 	}
 }
 	// Trunk with Bottom Slot
@@ -61,7 +118,7 @@ module top_trunk (height=66, thickness=2,slop=.4)
 {
 
 	x = height*1.6;
-	y = height*1.6;
+	y = height*1.5;
 
 	difference()
 	{
@@ -74,7 +131,7 @@ module top_trunk (height=66, thickness=2,slop=.4)
 			]);
 		}
 		translate([x,y+height*3/4,thickness/2])
-			cube([thickness+slop/2,height/2,thickness],true);
+			cube([thickness+slop,height/2+slop/2,thickness+.4],true);
 	}
 }
 
@@ -109,9 +166,9 @@ module branch (height=80, vertices=7, x=0, y=0, thickness=2,slop=.4)
 						union()
 							{
 								translate([-height/2.8,height/8.5,thickness/2])
-								cube([height/3,height/2.5,thickness],true);
+								cube([height/3,height/2.5,thickness+.4],true);
 								translate([height/2.8,height/8.5,thickness/2])
-								cube([height/3,height/2.5,thickness],true);
+								cube([height/3,height/2.5,thickness+.4],true);
 							}
 				}
 			}
@@ -121,10 +178,11 @@ module branch (height=80, vertices=7, x=0, y=0, thickness=2,slop=.4)
 			translate([0,0,thickness/2])
 			union ()
 			{
-				cube([thickness+slop,height/3.1,thickness],true);
+				cube([thickness+slop,height/3.1,thickness+.4],true);
 				rotate([0,0,90])
-					cube([thickness+slop,height/3.1,thickness],true);				
+					cube([thickness+slop,height/3.1,thickness+.4],true);				
 			}
 		}
 	}
 }
+
