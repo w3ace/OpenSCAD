@@ -17,10 +17,39 @@
 
  */
 
-height=90;
-thickness=2;
-slop=.4;
-tab_radius=1.4;
+// CUSTOMIZER Parameters Height is the base of all scaling for the model, 
+// it refers to the overall height of the trunks
+
+height=120; // [40:10:220]
+
+// Thickness is the model thickness that will be used for all of the
+// Trunks and Branches.
+
+thickness=10; // [1:12]
+
+// This refers to the excess space built into the slots, less slop 
+// will make the model tighter, slop is added to model thickness
+
+slop=0.4; // [0:0.2:2]
+
+// tab_radius is the radius of the frame and the connective tissue
+
+tab_radius=1.4; // [0.8:0.2:3]
+
+// decoration describes the top of the tree
+
+decoration = "Hanger"; // [Star,Hanger,None]
+
+if(decoration == "Star") {
+	star(points=5,outer=5*height*.02,inner=2*height*.02,thickness=thickness);
+} else {
+	if (decoration == "Hanger")
+	{
+		hanger(thickness=thickness,height=height);
+	}
+}
+
+//		hanger(thickness=thickness,);
 
 bottom_trunk(height=height, thickness=thickness, slop=slop);
 top_trunk(height=height, thickness=thickness, slop=slop);
@@ -33,9 +62,90 @@ branch(height=height*.4, vertices=5, x=height*.55, y=height*1.55, thickness=thic
 
 frame(height=height,tab_radius=tab_radius);
 
+
 // Variance for the branch polygons 
 
 function variance (height) = rands(-height,height,1)[0]/10;
+
+module hanger(thickness,height)
+{
+	color ("Darkgreen")
+		translate([height*1.6,height*1.45,0])
+			union() {
+				rotate_extrude(convexity = 10, $fn = 25)
+					translate([height*.04, 0, 0])
+						square([height*0.03,thickness]);
+				translate([-height*.02,height*0.045,0])
+					linear_extrude(height=thickness)
+						square([height*0.04,height*0.14]);
+			}
+}
+
+// points = number of points (minimum 3)
+// outer  = radius to outer points
+// inner  = radius to inner points
+module star(points, outer, inner, thickness=2) 
+{
+	
+	// polar to cartesian: radius/angle to x/y
+	function x(r, a) = r * cos(a); 
+	function y(r, a) = r * sin(a);
+	
+	// angular width of each pie slice of the star
+	increment = 360/points;
+	
+	color ("Gold")
+	translate([height*1.6,height*1.5,0])
+	rotate([0,0,270])
+	linear_extrude(height=thickness)
+
+	union()
+	{
+		for (p = [0 : points-1]) 
+		{
+			
+			// outer is outer point p
+			// inner is inner point following p
+			// next is next outer point following p
+
+				x_outer = x(outer, increment * p);
+					y_outer = y(outer, increment * p);
+					x_inner = x(inner, (increment * p) + (increment/2));
+					y_inner = y(inner, (increment * p) + (increment/2));
+					x_next  = x(outer, increment * (p+1));
+					y_next  = y(outer, increment * (p+1));
+				polygon (points = [[x_outer, y_outer], [x_inner, y_inner], [x_next, y_next],[0, 0]], convexity=1); //, paths  = [[0, 1, 2, 3]]);
+		}
+	}
+}
+
+// older versions of OpenSCAD do not support "angle" parameter for rotate_extrude
+// this module provides that capability even when using older versions (such as thingiverse customizer)
+//API from thehans : http://forum.openscad.org/rotate-extrude-angle-always-360-tp19035p19040.html
+module rotate_extrude2(angle=360, convexity=20, size=1000) {
+
+  module angle_cut(angle=90,size=1000) {
+    x = size*cos(angle/2);
+    y = size*sin(angle/2);
+    translate([0,0,-size]) 
+      linear_extrude(2*size) polygon([[0,0],[x,y],[x,size],[-size,size],[-size,-size],[x,-size],[x,-y]]);
+  }
+
+  // support for angle parameter in rotate_extrude was added after release 2015.03 
+  // Thingiverse customizer is still on 2015.03
+  angleSupport = (version_num() > 20150399) ? true : false; // Next openscad releases after 2015.03.xx will have support angle parameter
+  // Using angle parameter when possible provides huge speed boost, avoids a difference operation
+
+  if (angleSupport) {
+    rotate_extrude(angle=angle,convexity=convexity)
+      children();
+  } else {
+    rotate([0,0,angle/2]) difference() {
+      rotate_extrude(convexity=convexity) children();
+      angle_cut(angle, size);
+    }
+  }
+}
 
 
 module frame_tab (x=0,y=0,rx=0,rz=0,length=0,style=0)
@@ -58,7 +168,7 @@ module inner_tab (x=0,y=0,rx=0,rz=0,length=0,style=0)
 
 // Create Outside Frame
 
-module frame (height=66,tab_radius=1.4);
+module frame (height=66,tab_radius=1.4)
 {
 
 	width_multiplier = 1.2;
@@ -86,24 +196,27 @@ module frame (height=66,tab_radius=1.4);
 				rotate([0,90,0])
 					cylinder(r=tab_radius,h=height*width_multiplier);
 
-			translate([height/4+arc_distance,height/4+arc_distance,0])
-				rotate ([0,0,180]) 
-					rotate_extrude(angle=90, convexity=20)
-		   			translate([arc_distance, 0]) 
+			translate([height/4+arc_distance,height/4+arc_distance,0])		
+			rotate ([0,0,180]) 
+					rotate_extrude2(angle=90,convexity=10,size=arc_distance*2)
+		   			translate([arc_distance, 0,0]) 
 		   					circle(tab_radius);
+
 			translate([height/4+arc_distance+height*width_multiplier,height/4+arc_distance,0])
 				rotate ([0,0,270]) 
-					rotate_extrude(angle=90, convexity=20)
-		   			translate([arc_distance, 0]) 
+					rotate_extrude2(angle=90,convexity=10,size=arc_distance*2)
+		   			translate([arc_distance, 0,0]) 
 		   					circle(tab_radius);
+
 			translate([height/4+arc_distance+height*width_multiplier,height/4+height*height_multiplier+arc_distance,0])
-					rotate_extrude(angle=90, convexity=20)
-		   			translate([arc_distance, 0]) 
+					rotate_extrude2(angle=90,convexity=10,size=arc_distance*2)
+		   			translate([arc_distance, 0,0])
 		   					circle(tab_radius);
+
 			translate([height/4+arc_distance,height/4+height*height_multiplier+arc_distance,0])
 				rotate ([0,0,90]) 
-					rotate_extrude(angle=90, convexity=20)
-		   			translate([arc_distance, 0]) 
+					rotate_extrude2(angle=90,convexity=10,size=arc_distance*2)
+		   			translate([arc_distance, 0,0]) 
 		   					circle(tab_radius);
 
 		  		tab_base_x = height/4;
@@ -139,11 +252,13 @@ module frame (height=66,tab_radius=1.4);
 				 	inner_tab(x=tab_base_x+height*.8,y=tab_base_y+height*1.9,rx=90,rz=0,length=height*.4);
 				 	inner_tab(x=tab_base_x+height*.3,y=tab_base_y+height*1.7,rx=90,rz=0,length=height*.3);
 
-
 		}
+
+
 		translate([0,0,-tab_radius])
 			cube([height/4+arc_distance+height*width_multiplier+arc_distance*2+tab_radius*2,
 						height/4+height*height_multiplier+arc_distance+arc_distance*2+tab_radius*2,tab_radius]);
+
 	}
 }
 
