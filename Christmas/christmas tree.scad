@@ -20,17 +20,17 @@
 // CUSTOMIZER Parameters Height is the base of all scaling for the model, 
 // it refers to the overall height of the trunks
 
-height=120; // [40:10:220]
+height=55; // [40:10:220]
 
 // Thickness is the model thickness that will be used for all of the
 // Trunks and Branches.
 
-thickness=10; // [1:12]
+thickness=2; // [1:12]
 
 // This refers to the excess space built into the slots, less slop 
 // will make the model tighter, slop is added to model thickness
 
-slop=0.4; // [0:0.2:2]
+slop=0.1; // [0:0.1:0.4]
 
 // tab_radius is the radius of the frame and the connective tissue
 
@@ -54,11 +54,11 @@ if(decoration == "Star") {
 bottom_trunk(height=height, thickness=thickness, slop=slop);
 top_trunk(height=height, thickness=thickness, slop=slop);
 
-branch(height=height*.90, vertices=7, x=height*1.3, y=height*.8, thickness=thickness, slop=slop);
-branch(height=height*.75, vertices=7, x=height*1.15, y=height*1.6, thickness=thickness, slop=slop);
-branch(height=height*.6, vertices=6, x=height*1.1, y=height*2.3, thickness=thickness, slop=slop);
-branch(height=height*.5, vertices=6, x=height*.6, y=height*2.05, thickness=thickness, slop=slop);
-branch(height=height*.4, vertices=5, x=height*.55, y=height*1.55, thickness=thickness, slop=slop);
+branch(height=height*.90, slot=height/3*.99, vertices=7, x=height*1.3, y=height*.8, thickness=thickness, slop=slop);
+branch(height=height*.75, slot=height/3*4/5, vertices=7, x=height*1.15, y=height*1.6, thickness=thickness, slop=slop);
+branch(height=height*.6, slot=height/3*3/5,  vertices=6, x=height*1.1, y=height*2.3, thickness=thickness, slop=slop);
+branch(height=height*.4, slot=height/3*2/5, vertices=6, x=height*.6, y=height*2.05, thickness=thickness, slop=slop);
+branch(height=height*.3, slot=height/3*1/5, vertices=5, x=height*.55, y=height*1.55, thickness=thickness, slop=slop);
 
 frame(height=height,tab_radius=tab_radius);
 
@@ -70,12 +70,12 @@ function variance (height) = rands(-height,height,1)[0]/10;
 module hanger(thickness,height)
 {
 	color ("Darkgreen")
-		translate([height*1.6,height*1.45,0])
+		translate([height*1.6,height*1.47,0])
 			union() {
 				rotate_extrude(convexity = 10, $fn = 25)
-					translate([height*.04, 0, 0])
-						square([height*0.03,thickness]);
-				translate([-height*.02,height*0.045,0])
+					translate([height*.02, 0, 0])
+						square([height*0.02,thickness]);
+				translate([-height*.02,height*0.025,0])
 					linear_extrude(height=thickness)
 						square([height*0.04,height*0.14]);
 			}
@@ -310,14 +310,14 @@ module top_trunk (height=66, thickness=2,slop=.4)
 
 // Module to create a horizontal branch
 
-module branch (height=80, vertices=7, x=0, y=0, thickness=2,slop=.4)
+module branch (height=80, slot=75, vertices=7, x=0, y=0, thickness=2,slop=.4)
 {
 	p = rands(vertices,vertices+4,1)[0];
 
 	// Put branch in proper location 
 	translate ([x,y,0])
 	{
-  color("Darkgreen")
+  		color("Darkgreen")
 		difference() 
 		{
 			// Random number of branches
@@ -353,9 +353,9 @@ module branch (height=80, vertices=7, x=0, y=0, thickness=2,slop=.4)
 			translate([0,0,thickness/2])
 			union ()
 			{
-				cube([thickness+slop,height/2.6,thickness+.4],true);
+				cube([thickness+slop,slot,thickness+.4],true);
 				rotate([0,0,90])
-					cube([thickness+slop,height/2.6,thickness+.4],true);				
+					cube([thickness+slop,slot,thickness+.4],true);				
 			}
 		}
 	}
