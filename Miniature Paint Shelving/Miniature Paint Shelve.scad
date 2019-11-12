@@ -59,7 +59,7 @@ slop = .1;
 
 
 first_plate();
-//second_plate();
+// second_plate();
 
 
 module first_plate ()
@@ -76,7 +76,7 @@ module first_plate ()
 	rotate([0,0,90-atan(1.8/2.6)])
 		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 
-	translate([0,0,0])
+	translate([0,0,shelf_thickness])
 	rotate([180,0,90-atan(1.8/2.6)])
 		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 }
