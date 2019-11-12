@@ -20,14 +20,26 @@
 
 
 num_shelves = 4;
-//shelf_width = 44;
-//shelf_depth = 28;
 
-shelf_width=17;
-shelf_depth=11;
 
-shelf_thickness = 1;
+// SHELF WIDTH, HEIGHT, AND THICKNESS should be based on known paint brands
+// VALLEJO : 
+// shelf_size = 62;
+// shelf_width = 44;
+// shelf_depth = 28;
+// large_holes = 30;
+// small_holes = 9;
 
+shelf_size = 31;
+large_holes = 15;
+small_holes = 4.5;
+num_holes =4;
+
+shelf_width=22;
+shelf_depth=14;
+
+
+shelf_thickness = 2;
 /*	hyp = hypotenuse(shelf_width,shelf_depth);
 	linear_extrude(height=shelf_thickness)
 	translate([-hyp*.8,0,0])	
@@ -42,17 +54,47 @@ shelf_thickness = 1;
 							square(size=[shelf_width,shelf_depth]);
 						translate([hyp*.4,-shelf_thickness,0])	
 							square(size=[hyp*.2,shelf_thickness]);
+							translate([shelf_width-shelf_thickness,-hyp*.4,0])
+								square(size=[shelf_thickness,hyp*.2]);
 						}
 			}
 
 */
 
-make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
+linear_extrude(height=shelf_thickness)
+make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
+			shelf_size,hypotenuse(shelf_width,shelf_depth));
+//make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 
 
 function hypotenuse (l1,l2) = sqrt(l1*l1+l2*l2);
 
+module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,hyp)
+{
+	shelf_length=num_holes*large_holes*1.4;
 
+	difference()
+	{
+		square([shelf_length,shelf_size]);
+
+		for(i=[1:num_holes])
+		{
+			translate ([(i-.2)*large_holes*1.2,3+(large_holes/2),0])
+				circle (d=large_holes);
+			translate ([(i-.2)*large_holes*1.2,3+(large_holes*1.4)+(small_holes/2),0])
+				circle (d=small_holes);
+		}
+
+		translate([0,shelf_size*2/3,0])
+			square([shelf_thickness*2,20]);
+		translate([shelf_length-shelf_thickness*2,shelf_size*2/3,0])
+			square([shelf_thickness*2,20]);
+		translate([shelf_thickness,hyp*.4])
+			square(size=[shelf_thickness,hyp*.2]);
+		translate([shelf_length-shelf_thickness*2,hyp*.4])
+			square(size=[shelf_thickness,hyp*.2]);
+	}
+}
 
 module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 {
@@ -77,9 +119,15 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 						{					
 						translate([0,-shelf_depth,0])
 							square(size=[shelf_width,shelf_depth]);
+						// Notches to attach shelves
 						translate([hyp*.4,-shelf_thickness,0])	
 							square(size=[hyp*.2,shelf_thickness]);
+						
+						if (i==1){
+							translate([shelf_width-shelf_thickness,-hyp*.4,0])
+								square(size=[shelf_thickness,hyp*.2]);
 						}
+					}
 			}
 
 			// ROWS OF CIRCLE CUTOUTS
