@@ -19,6 +19,8 @@
 
 
 
+$fn=30;
+
 num_shelves = 4;
 
 
@@ -31,19 +33,20 @@ num_shelves = 4;
 // small_holes = 9;
 
 
-/*
+
 shelf_size = 62;
 large_holes = 30;
 small_holes = 9;
 num_holes = 6;
 
-shelf_width=44;
-shelf_depth=28;
+shelf_width=36;
+shelf_depth=16;
 
-shelf_thickness = 3;
-slop = .1;
-*/
+shelf_thickness = 4;
+slop = .2;
 
+
+/*
 shelf_angle = 35;
 shelf_size = 29;
 large_holes = 15;
@@ -54,28 +57,35 @@ shelf_width=22;
 shelf_depth=14;
 
 shelf_thickness = 2;
-slop = .1;
-//
+slop = .2;
+*/
 
+	hyp=hypotenuse(shelf_width,shelf_depth);
+	shelf_length=num_holes*large_holes*1.1+large_holes*.7;
+
+	echo (shelf_length);
 
 first_plate();
-// second_plate();
 
-
+//// second_plate();
+	// MIDDLE SHELF
 module first_plate ()
 {
 	hyp=hypotenuse(shelf_width,shelf_depth);
 
+	// MIDDLE SHELF
 	translate([sin(atan(1.8/2.6))*(hyp*(num_shelves+1.3))+shelf_size+1,0,0])
-		rotate([0,0,90])
-			linear_extrude(height=shelf_thickness)
-				make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
-					shelf_size,shelf_width,slop,hyp);
 
+		rotate([0,0,90])
+				make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
+					shelf_size,shelf_width,slop,hyp,type="top");
+
+	// UPRIGHT
 	translate([0,1,0])
 	rotate([0,0,90-atan(1.8/2.6)])
 		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 
+  // UPRIGHT
 	translate([0,0,shelf_thickness])
 	rotate([180,0,90-atan(1.8/2.6)])
 		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
@@ -95,36 +105,62 @@ module second_plate ()
 
 }
 
-
 function hypotenuse (l1,l2) = sqrt(l1*l1+l2*l2);
 
-module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,shelf_width,slop,hyp)
+module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,shelf_width,slop,hyp,type="middle")
 {
 
 	shelf_length=num_holes*large_holes*1.1+large_holes*.7;
-	echo(shelf_length);
 
-	difference()
+
+	union() 
 	{
-		square([shelf_length,shelf_size]);
+		if(type=="top")
+	  	translate([0,shelf_width,0])
+				rotate([90,0,0])
+					difference () {
+						union () {
+							linear_extrude(height=shelf_thickness)
+								square([shelf_length,shelf_width]);
+							translate([0,shelf_width,shelf_thickness])	
+								rotate([0,90,0])
+									cylinder(shelf_length,r=shelf_thickness);
+						}
+						translate([shelf_width-shelf_thickness,-shelf_depth*.8,0])
+							square(size=[shelf_thickness,shelf_depth*.4]);
+					}
 
-		for(i=[1:num_holes])
-		{
-			translate ([(i-.2)*large_holes*1.1,2+(large_holes/2),0])
-				circle (d=large_holes);
-			translate ([(i-.2)*large_holes*1.1,2+(large_holes*1.4)+(small_holes/2),0])
-				circle (d=small_holes);
-		}
+		linear_extrude(height=shelf_thickness)
+			difference()
+			{
+				if(type=="bottom")
+				{
+					square([shelf_length,shelf_size-small_holes-2]);
+				} else {
+					square([shelf_length,shelf_size]);
+				}
+				for(i=[1:num_holes])
+				{
+					if(type != "top")
+						translate ([(i-.2)*large_holes*1.1,2+(large_holes/2),0])
+							circle (d=large_holes);
+					if(type != "bottom")
+						translate ([(i-.2)*large_holes*1.1,(shelf_width-large_holes)+(large_holes*1.5)+(small_holes/2),0])
+							circle (d=small_holes);
+				}
+			
+				// SLOTS FOR UPRIGHTS
+				translate([shelf_thickness-slop,shelf_width-slop,0])
+					square([shelf_thickness+slop*2,shelf_size-shelf_width+slop*2]);
+				translate([shelf_length-shelf_thickness*2-slop,shelf_width-slop,0])
+					square([shelf_thickness+slop*2,shelf_size-shelf_width+slop*2]);
 
-		translate([0,shelf_width,0])
-			square([shelf_thickness*2,shelf_size-shelf_width]);
-		translate([shelf_length-shelf_thickness*2,shelf_width,0])
-			square([shelf_thickness*2,shelf_size-shelf_width]);
-
-		translate([shelf_thickness+slop,hyp*.4-slop])
-			square(size=[shelf_thickness+slop*2,hyp*.2+slop*2]);
-		translate([shelf_length-shelf_thickness*2-slop,hyp*.4-slop])
-			square(size=[shelf_thickness+slop*2,hyp*.2+slop*2]);
+				// SLOTS FOR NOTCHES
+				translate([shelf_thickness-slop,hyp*.4-slop])
+					square(size=[shelf_thickness+slop*2,hyp*.2+slop*2]);
+				translate([shelf_length-shelf_thickness*2-slop,hyp*.4-slop])
+					square(size=[shelf_thickness+slop*2,hyp*.2+slop*2]);
+			}
 	}
 }
 
@@ -151,13 +187,15 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 						{					
 						translate([0,-shelf_depth,0])
 							square(size=[shelf_width,shelf_depth]);
+
 						// Notches to attach shelves
 						translate([hyp*.4,-shelf_thickness,0])	
 							square(size=[hyp*.2,shelf_thickness]);
 						
+						// Extra Notch for top shelf
 						if (i==1){
-							translate([shelf_width-shelf_thickness,-hyp*.4,0])
-								square(size=[shelf_thickness,hyp*.2]);
+							translate([shelf_width-shelf_thickness,-shelf_depth*.8,0])
+								square(size=[shelf_thickness,shelf_depth*.4]);
 						}
 					}
 			}
