@@ -162,9 +162,9 @@ module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,
 
 				// SLOTS FOR NOTCHES
 				translate([shelf_thickness-slop,hyp*.4-slop])
-					square(size=[shelf_thickness+slop*4,hyp*.2+slop*4]);
+					square(size=[shelf_thickness+slop*2,hyp*.2+slop*2]);
 				translate([shelf_length-shelf_thickness*2-slop,hyp*.4-slop])
-					square(size=[shelf_thickness+slop*4,hyp*.2+slop*4]);
+					square(size=[shelf_thickness+slop*2,hyp*.2+slop*2]);
 			}
 	}
 }
