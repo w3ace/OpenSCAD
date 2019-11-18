@@ -68,14 +68,17 @@ slop = .2;
 
 	echo (shelf_length);
 
+//first_plate();
+
+
+
+
+	// UPRIGHT
 		rotate([0,0,90])
 				make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
-					shelf_size,shelf_width,slop,hyp,type="middle");
+					shelf_size,shelf_width,slop,hyp,type="bottom");
 
 
-
-//// second_plate();
-	// MIDDLE SHELF
 module first_plate ()
 {
 	hyp=hypotenuse(shelf_width,shelf_depth);
@@ -157,10 +160,10 @@ module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,
 				}
 			
 				// SLOTS FOR UPRIGHTS
-				translate([shelf_thickness-slop,shelf_width-slop,0])
-					square([shelf_thickness+slop*2,shelf_size-shelf_width+slop*2]);
-				translate([shelf_length-shelf_thickness*2-slop,shelf_width-slop,0])
-					square([shelf_thickness+slop*2,shelf_size-shelf_width+slop*2]);
+				translate([shelf_thickness-slop,shelf_width+(shelf_depth*.2)+slop,0])
+					square([shelf_thickness+slop*2,shelf_size-shelf_width+(slop*2)]);
+				translate([shelf_length-shelf_thickness*2-slop,shelf_width+(shelf_depth*.2)+slop,0])
+					square([shelf_thickness+slop*2,shelf_size-shelf_width+(slop*2)]);
 
 				// SLOTS FOR NOTCHES
 				translate([shelf_thickness-slop,hyp*.4-slop])
@@ -194,11 +197,16 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 					rotate([0,0,90-atan(shelf_width/shelf_depth	)])
 						difference ()
 						{					
-						translate([0,-shelf_depth,0])
-							square(size=[shelf_width,shelf_depth]);
-
+							union() {
+								// Shelf Rectangle Cutout
+								translate([0,-shelf_depth,0])
+									square(size=[shelf_width,shelf_depth]);
+								// Shelf uprigth cutouts
+								translate([shelf_depth,-shelf_thickness,0])
+									square(size=[shelf_depth*.4,shelf_thickness]);
+							}
 						// Notches to attach shelves
-						translate([hyp*.4,-shelf_thickness,0])	
+						translate([hyp*.4,-shelf_thickness,0])
 							square(size=[hyp*.2,shelf_thickness]);
 						
 						// Extra Notch for top shelf
@@ -210,7 +218,7 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 			}
 
 			for(j=[1:num_shelves-1])
-				translate([hyp*(.3+j),shelf_depth*.85,0])
+				translate([hyp*(.4+j),shelf_depth*.85,0])
 					rotate([0,0,atan(xht/yht)])
 						scale([(num_shelves-j)*1.2,1])
 							translate([(num_shelves-j-1)*(xht)+xht*1.4,(num_shelves-j-1),0])
