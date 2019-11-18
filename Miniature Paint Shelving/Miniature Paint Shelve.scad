@@ -22,6 +22,9 @@
 $fn=30;
 
 num_shelves = 4;
+xht = 1.9;
+yht = 2.2;
+spare_shelf = 1.3;
 
 
 // SHELF WIDTH, HEIGHT, AND THICKNESS should be based on known paint brands
@@ -35,12 +38,12 @@ num_shelves = 4;
 
 
 shelf_size = 62;
-large_holes = 30;
+large_holes = 27;
 small_holes = 9;
 num_holes = 6;
 
-shelf_width=36;
-shelf_depth=16;
+shelf_width=33;
+shelf_depth=28;
 
 shelf_thickness = 4;
 slop = .2;
@@ -65,12 +68,11 @@ slop = .2;
 
 	echo (shelf_length);
 
-
 		rotate([0,0,90])
 				make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
 					shelf_size,shelf_width,slop,hyp,type="middle");
-//
-//first_plate();
+
+
 
 //// second_plate();
 	// MIDDLE SHELF
@@ -79,7 +81,7 @@ module first_plate ()
 	hyp=hypotenuse(shelf_width,shelf_depth);
 
 	// MIDDLE SHELF
-	translate([sin(atan(1.8/2.6))*(hyp*(num_shelves+1.3))+shelf_size+1,0,0])
+	translate([sin(atan(xht/yht))*(hyp*(num_shelves+spare_shelf))+shelf_size+1,0,0])
 
 		rotate([0,0,90])
 				make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
@@ -87,12 +89,12 @@ module first_plate ()
 
 	// UPRIGHT
 	translate([0,1,0])
-	rotate([0,0,90-atan(1.8/2.6)])
+	rotate([0,0,90-atan(xht/yht)])
 		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 
   // UPRIGHT
 	translate([0,0,shelf_thickness])
-	rotate([180,0,90-atan(1.8/2.6)])
+	rotate([180,0,90-atan(xht/yht)])
 		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 }
 
@@ -121,7 +123,7 @@ module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,
 	union() 
 	{
 		if(type=="top")
-	  	translate([0,shelf_width,0])
+	  	translate([0,shelf_width,0]) 
 				rotate([90,0,0])
 					difference () {
 						union () {
@@ -173,13 +175,15 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 {
 
 	hyp = hypotenuse(shelf_width,shelf_depth);
+	total_hyp = hyp*(num_shelves+spare_shelf);
 
 	linear_extrude(height=shelf_thickness)
 		difference()
 		{
 
 			// MAIN TRIANGLE
-			polygon(points=[[0,0],[hyp*(num_shelves+1.3),0],[hyp*2.6,hyp*1.8]]);
+
+			polygon(points=[[0,0],[total_hyp,0],[hyp*yht,hyp*xht]]);
 
 			// SHELF CUTOUTS 
 			translate([-hyp*.8,0,0])	
@@ -205,10 +209,17 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 					}
 			}
 
+			for(j=[1:num_shelves-1])
+				translate([hyp*(.3+j),shelf_depth*.85,0])
+					rotate([0,0,atan(xht/yht)])
+						scale([(num_shelves-j)*1.2,1])
+							translate([(num_shelves-j-1)*(xht)+xht*1.4,(num_shelves-j-1),0])
+								circle(d=shelf_depth*.7);
+
 			// ROWS OF CIRCLE CUTOUTS
 			// 
 			//
-		for(j=[1:num_shelves-1])
+/*		for(j=[1:num_shelves-1])
 				for(i=[1:num_shelves-j])
 					translate([hyp*i+hyp*((j-.3)*.5),hyp*(.55+(j-1)*.3),0])
 						if(i==num_shelves-j)
@@ -221,7 +232,7 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 								circle(d=hyp*.4);
 						}
 
-
+*/
 
 
 /*
