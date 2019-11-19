@@ -71,12 +71,12 @@ slop = .2;
 //first_plate();
 
 
-
+import ("../Buttons/flattened sheep.stl", convexity=3);
 
 	// UPRIGHT
-		rotate([0,0,90])
-				make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
-					shelf_size,shelf_width,slop,hyp,type="bottom");
+	//translate([0,1,0])
+	//rotate([0,0,90-atan(xht/yht)])
+//		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 
 
 module first_plate ()

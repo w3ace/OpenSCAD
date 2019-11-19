@@ -20,12 +20,12 @@
 // CUSTOMIZER Parameters Height is the base of all scaling for the model, 
 // it refers to the overall height of the trunks
 
-height=45; // [40:10:220]
+height=65; // [40:10:220]
 
 // Thickness is the model thickness that will be used for all of the
 // Trunks and Branches.
 
-thickness=1.6; // [1:12]
+thickness=1.6; // [1:1.6:4]
 
 // This refers to the excess space built into the slots, less slop 
 // will make the model tighter, slop is added to model thickness
@@ -40,6 +40,12 @@ tab_radius=1; // [0.8:0.2:3]
 
 decoration = "Hanger"; // [Star,Hanger,None]
 
+
+// Don't print the card
+
+print_card="No"; // [Yes,No]
+
+
 if(decoration == "Star") {
 	star(points=5,outer=5*height*.02,inner=2*height*.02,thickness=thickness);
 } else {
@@ -49,19 +55,21 @@ if(decoration == "Star") {
 	}
 }
 
+
 //		hanger(thickness=thickness,);
 
 bottom_trunk(height=height, thickness=thickness, slop=slop);
 top_trunk(height=height, thickness=thickness, slop=slop);
 
 branch(height=height*.90, slot=height/3*.99, vertices=7, x=height*1.3, y=height*.8, thickness=thickness, slop=slop);
-branch(height=height*.75, slot=height/3*4/5, vertices=7, x=height*1.15, y=height*1.6, thickness=thickness, slop=slop);
-branch(height=height*.6, slot=height/3*3/4.5,  vertices=6, x=height*1.1, y=height*2.3, thickness=thickness, slop=slop);
-branch(height=height*.4, slot=height/3*2/4, vertices=6, x=height*.6, y=height*2.05, thickness=thickness, slop=slop);
-branch(height=height*.3, slot=height/3*1/4, vertices=5, x=height*.55, y=height*1.55, thickness=thickness, slop=slop);
+branch(height=height*.75, slot=height/3*.75, vertices=7, x=height*1.15, y=height*1.6, thickness=thickness, slop=slop);
+branch(height=height*.6, slot=height/3*.6,  vertices=6, x=height*1.1, y=height*2.3, thickness=thickness, slop=slop);
+branch(height=height*.4, slot=height/3*.4, vertices=6, x=height*.6, y=height*2.05, thickness=thickness, slop=slop);
+branch(height=height*.3, slot=height/3*.32, vertices=5, x=height*.55, y=height*1.55, thickness=thickness, slop=slop);
 
-frame(height=height,tab_radius=tab_radius);
-
+if (print_card == "Yes") {
+	frame(height=height,tab_radius=tab_radius);
+}
 
 // Variance for the branch polygons 
 
@@ -74,7 +82,7 @@ module hanger(thickness,height)
 			union() {
 				rotate_extrude(convexity = 10, $fn = 25)
 					translate([height*.02, 0, 0])
-						square([height*0.015,thickness]);
+						square([height*0.02,thickness]);
 				translate([-height*.02,height*0.025,0])
 					linear_extrude(height=thickness)
 						square([height*0.04,height*0.14]);
