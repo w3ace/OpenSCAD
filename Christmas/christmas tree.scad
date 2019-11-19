@@ -61,7 +61,7 @@ if(decoration == "Star") {
 bottom_trunk(height=height, thickness=thickness, slop=slop);
 top_trunk(height=height, thickness=thickness, slop=slop);
 
-branch(height=height*.90, slot=height/3*.99, vertices=7, x=height*1.3, y=height*.8, thickness=thickness, slop=slop);
+branch(height=height*.90, slot=height/3, vertices=7, x=height*1.3, y=height*.8, thickness=thickness, slop=slop);
 branch(height=height*.75, slot=height/3*.75, vertices=7, x=height*1.15, y=height*1.6, thickness=thickness, slop=slop);
 branch(height=height*.6, slot=height/3*.6,  vertices=6, x=height*1.1, y=height*2.3, thickness=thickness, slop=slop);
 branch(height=height*.4, slot=height/3*.4, vertices=6, x=height*.6, y=height*2.05, thickness=thickness, slop=slop);

@@ -43,7 +43,7 @@ small_holes = 9;
 num_holes = 6;
 
 shelf_width=33;
-shelf_depth=28;
+shelf_depth=38;
 
 shelf_thickness = 4;
 slop = .2;
@@ -71,12 +71,16 @@ slop = .2;
 //first_plate();
 
 
-import ("../Buttons/flattened sheep.stl", convexity=3);
+	// MIDDLE SHELF
+	 translate([sin(atan(xht/yht))*(hyp*(num_shelves+spare_shelf))+shelf_size+1,0,0])
 
+		rotate([0,0,90])
+				make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
+					shelf_size,shelf_width,slop,hyp,type="bottom");
 	// UPRIGHT
-	//translate([0,1,0])
-	//rotate([0,0,90-atan(xht/yht)])
-//		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
+	translate([0,1,0])
+	rotate([0,0,90-atan(xht/yht)])
+		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 
 
 module first_plate ()
@@ -160,15 +164,15 @@ module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,
 				}
 			
 				// SLOTS FOR UPRIGHTS
-				translate([shelf_thickness-slop,shelf_width+(shelf_depth*.2)+slop,0])
+				translate([shelf_thickness-slop,shelf_width+(shelf_depth*.25)+slop,0])
 					square([shelf_thickness+slop*2,shelf_size-shelf_width+(slop*2)]);
-				translate([shelf_length-shelf_thickness*2-slop,shelf_width+(shelf_depth*.2)+slop,0])
+				translate([shelf_length-shelf_thickness*2-slop,shelf_width+(shelf_depth*.25)+slop,0])
 					square([shelf_thickness+slop*2,shelf_size-shelf_width+(slop*2)]);
 
 				// SLOTS FOR NOTCHES
-				translate([shelf_thickness-slop,hyp*.4-slop])
+				translate([shelf_thickness-slop,hyp*.1-slop])
 					square(size=[shelf_thickness+slop*4,hyp*.2+slop*4]);
-				translate([shelf_length-shelf_thickness*2-slop,hyp*.4-slop])
+				translate([shelf_length-shelf_thickness*2-slop,hyp*.1-slop])
 					square(size=[shelf_thickness+slop*4,hyp*.2+slop*4]);
 			}
 	}
@@ -203,10 +207,10 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 									square(size=[shelf_width,shelf_depth]);
 								// Shelf uprigth cutouts
 								translate([shelf_depth,-shelf_thickness,0])
-									square(size=[shelf_depth*.4,shelf_thickness]);
+									square(size=[shelf_depth*.35,shelf_thickness]);
 							}
 						// Notches to attach shelves
-						translate([hyp*.4,-shelf_thickness,0])
+						translate([hyp*.1,-shelf_thickness,0])
 							square(size=[hyp*.2,shelf_thickness]);
 						
 						// Extra Notch for top shelf
@@ -253,7 +257,9 @@ module make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness)
 						circle(d=hyp*.4);
 */
 			//CUT OFF THE BOTTOM POINT
-			polygon(points=[[hyp*(num_shelves+.5),0],[hyp*(num_shelves+2),0],[(hyp*(num_shelves+.5)),hyp]]);		
+			polygon(points=[[hyp*(num_shelves-.4),0],
+				[hyp*(num_shelves+2),0],
+				[(hyp*(num_shelves+.8)),hyp]]);		
 		}
 }
 /*
