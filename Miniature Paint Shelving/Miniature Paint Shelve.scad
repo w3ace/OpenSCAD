@@ -27,10 +27,10 @@ spare_shelf = 1.8;
 // SHELF WIDTH, HEIGHT, AND THICKNESS should be based on known paint brands
 // VALLEJO : 
 
-shelf_size = 62;
+shelf_size = 70;
 large_holes = 27;
-small_holes = 9;
-num_holes = 6;
+small_holes = 12;
+num_holes = 2;
 
 shelf_width=33;
 shelf_depth=29;
@@ -65,7 +65,7 @@ slop = .2;
 	bottom_length=hypotenuse(hyp*xht,total_hyp-hyp*yht);
 
 
-
+//hazard_cutout_2d(100,50,300,500);
 
 				make_shelf(num_holes,large_holes,small_holes,shelf_thickness,
 					shelf_size,shelf_width,slop,hyp,type="top");
@@ -78,7 +78,7 @@ slop = .2;
 
 //	translate([50,50,0])
 //	rotate([0,0,90-atan(xht/yht)])
-	//	make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
+//		make_shelf_upright (num_shelves,shelf_width,shelf_depth,shelf_thickness);
 
 
 						
@@ -120,6 +120,32 @@ module second_plate ()
 
 function hypotenuse (l1,l2) = sqrt(l1*l1+l2*l2);
 
+module hazard_cutout_2d (x,y,x1,y1)
+{
+
+
+	intersection () {
+
+		polygon( points=[[x,y],[x1,y],[x1,y1],[x,y1]]);
+
+			union() {
+
+				stripe_width=(y1-y)/5;
+				for(i=[-4:((x1-x)/stripe_width)+4]) {
+					if(i % 2) {
+
+					//	echo(i);
+							polygon(points = [[x+(i+3)*stripe_width,y],[x+(i+4)*stripe_width,y],
+								[x+i*stripe_width,y1],[x+(i-1)*stripe_width,y1]]);
+
+
+				//		echo (x+(i-1)*stripe_width,y,x+i*stripe_width,y1);
+					}
+				}
+			}
+		}
+}
+
 module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,shelf_width,slop,hyp,type="middle")
 {
 
@@ -135,26 +161,29 @@ module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,
 					difference () {
 						union () {
 							linear_extrude(height=shelf_thickness)
-								square([shelf_length,shelf_depth]);
-								translate([0,shelf_depth,shelf_thickness])	
+								difference() {
+									square([shelf_length,shelf_depth*1.3]);
+									hazard_cutout_2d(shelf_thickness*3,shelf_thickness*2,shelf_length-shelf_thickness*3,shelf_width);
+								}
+								translate([0,shelf_depth*1.3,shelf_thickness*.75])	
 									rotate([0,90,0])
-										cylinder(shelf_length,r=shelf_thickness);
-								translate([0,shelf_depth,shelf_thickness])	
+										cylinder(shelf_length,r=shelf_thickness*.5);
+								translate([0,shelf_depth*1.3,shelf_thickness*.75])	
 									rotate([90,0,0]) {
-										cylinder(shelf_depth,r=shelf_thickness);
-										sphere(r=shelf_thickness);
+										cylinder(shelf_depth*1.3,r=shelf_thickness*.5);
+										sphere(r=shelf_thickness*.5);
 									}
-								translate([shelf_length,shelf_depth,shelf_thickness])	
+								translate([shelf_length,shelf_depth*1.3,shelf_thickness*.75])	
 									rotate([90,0,0]) {
-										cylinder(shelf_depth,r=shelf_thickness);									
-										sphere(r=shelf_thickness);
+										cylinder(shelf_depth*1.3,r=shelf_thickness*.5);									
+										sphere(r=shelf_thickness*.5);
 									}
 						}
 						color("Green")
-						translate([shelf_thickness-slop,shelf_depth*.8-slop,0])
+						translate([shelf_thickness-slop,shelf_depth*.65-slop,0])
 							linear_extrude(height=shelf_thickness)
 								square(size=[shelf_thickness+slop*2,shelf_depth*.15+slop*2]);
-						translate([shelf_length-slop-shelf_thickness*2,shelf_depth*.8-slop,0])
+						translate([shelf_length-slop-shelf_thickness*2,shelf_depth*.65-slop,0])
 							linear_extrude(height=shelf_thickness)
 								square(size=[shelf_thickness+slop*2,shelf_depth*.15+slop*2]);
 					}
@@ -166,8 +195,19 @@ module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,
 				{
 					square([shelf_length,shelf_size-small_holes-2]);
 				} else {
+					if (type=="top")
+					{
+						difference() {
+							square([shelf_length,shelf_size]);
+							hazard_cutout_2d(shelf_thickness*3, shelf_thickness , shelf_length-shelf_thickness*3,large_holes);
+				}
+
+
+					} else {
 					square([shelf_length,shelf_size]);
 				}
+				}
+
 				for(i=[1:num_holes])
 				{
 					if(type != "top")
