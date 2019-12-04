@@ -34,10 +34,6 @@ TwoRow(2);
 //basehex(baseheight=4.4,connectors=[0,60,120,180,240,300],texture="water optimized.stl");
 
 
- vector=[ 10, 20, 30, 40 ];
- echo("sum vec=", sumv(vector,2,1)); // calculates 20+30=50
- echo("in vector = ", invector(40,vector,0));
-
 
 // Module for a base tile that is a row of 4 hexes and a row of 5 hexes
 function sumv(v,i,s=0) = (i==s ? v[i] : v[i] + sumv(v,i-1,s));
@@ -48,7 +44,7 @@ function invector (value,vector,i=0) =
 module TwoRow(size) {
 
 	union() {
-		for(i=[0:size]) {
+		for(i=[0:size-1]) {
 			translate([cle*i,0,0])
 				if(i==0) {
 					basehex(baseheight=3.8,connectors=[120,180,240,300],texture="");
@@ -56,9 +52,9 @@ module TwoRow(size) {
 					basehex(baseheight=3.8,connectors=[240,300],texture="");
 				}
 		}
-		translate([cle*size+1,0,0])
+		translate([cle*size,0,0])
 			basehex(baseheight=3.8,connectors=[0,60,240,300],texture="");			
-		for(i=[1:size]) {
+		for(i=[1:size-1]) {
 			translate([cle*i-(cle/2),(hexheight*.75),0])
 				if(i==1) {
 					basehex(baseheight=3.8,connectors=[60,120,180],texture="");
