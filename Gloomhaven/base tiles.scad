@@ -30,35 +30,73 @@ cle = 33;
 hexheight=38.11;
 
 
+TwoRow(2);
+//basehex(baseheight=4.4,connectors=[0,60,120,180,240,300],texture="water optimized.stl");
 
-union() {
-	for(i=[0:4]) {
-		translate([cle*i,0,0])
-			if(i==0) {
-				basehex(baseheight=3.8,connectors=[120,180,240,300],texture="");
-			}
-				if(i==4) {
-					basehex(baseheight=3.8,connectors=[0,60,240,300],texture="");				
-				}
-				if(i==2 || i==3) {
+
+ vector=[ 10, 20, 30, 40 ];
+ echo("sum vec=", sumv(vector,2,1)); // calculates 20+30=50
+ echo("in vector = ", invector(40,vector,0));
+
+
+// Module for a base tile that is a row of 4 hexes and a row of 5 hexes
+function sumv(v,i,s=0) = (i==s ? v[i] : v[i] + sumv(v,i-1,s));
+
+function invector (value,vector,i=0) = 
+	(value==vector[i] ? 1 : (i==len(vector) ? 0 : 0 + invector(value,vector,i+1))); 
+
+module TwoRow(size) {
+
+	union() {
+		for(i=[0:size]) {
+			translate([cle*i,0,0])
+				if(i==0) {
+					basehex(baseheight=3.8,connectors=[120,180,240,300],texture="");
+				} else {
 					basehex(baseheight=3.8,connectors=[240,300],texture="");
 				}
-			}
-	
-	for(i=[1:4]) {
-		translate([cle*i-(cle/2),(hexheight*.75),0])
-			if(i==1) {
-				basehex(baseheight=3.8,connectors=[60,120,180],texture="");
-			}
-			if(i==4) {
-				basehex(baseheight=3.8,connectors=[0,60,120],texture="");				
-			}
-			if(i==2 || i==3) {
-				basehex(baseheight=3.8,connectors=[60,120],texture="");
-			}
 		}
+		translate([cle*size+1,0,0])
+			basehex(baseheight=3.8,connectors=[0,60,240,300],texture="");			
+		for(i=[1:size]) {
+			translate([cle*i-(cle/2),(hexheight*.75),0])
+				if(i==1) {
+					basehex(baseheight=3.8,connectors=[60,120,180],texture="");
+				} else {
+					basehex(baseheight=3.8,connectors=[60,120],texture="");
+				}
+		}
+		translate([cle*size-(cle/2),(hexheight*.75),0])
+			basehex(baseheight=3.8,connectors=[0,60,120],texture="");				
+		 
+	}
+}
 
-	
+module base3v4() {
+
+	union() {
+		for(i=[0:2]) {
+			translate([cle*i,0,0])
+				if(i==0) {
+					basehex(baseheight=3.8,connectors=[120,180,240,300],texture="");
+				} else {
+					basehex(baseheight=3.8,connectors=[240,300],texture="");
+				}
+		}
+		translate([cle*4,0,0])
+			basehex(baseheight=3.8,connectors=[0,60,240,300],texture="");			
+		for(i=[1:2]) {
+			translate([cle*i-(cle/2),(hexheight*.75),0])
+				if(i==1) {
+					basehex(baseheight=3.8,connectors=[60,120,180],texture="");
+				} else {
+					basehex(baseheight=3.8,connectors=[60,120],texture="");
+				}
+		}
+		translate([cle*4-(cle/2),(hexheight*.75),0])
+			basehex(baseheight=3.8,connectors=[0,60,120],texture="");				
+		 
+	}
 }
 
 /*
@@ -121,15 +159,15 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 		union() {
 			hull() {
 				translate([0,0,(baseheight/2)])
-					Hexagon(cle=cle-.3,h=baseheight);
-				translate([0,0,baseheight/2+.3])
-					Hexagon(cle=cle,h=baseheight-.6);
+					Hexagon(cle=cle-.6,h=baseheight);
+				translate([0,0,baseheight/2+.4])
+					Hexagon(cle=cle,h=baseheight-.8);
 				}
 			hull() {
-				translate([0,0,(baseheight+.3)/2])
-					Hexagon(cle=cle-1,h=baseheight+.3);
-				translate([0,0,(baseheight+.8)/2])
-					Hexagon(cle=cle-4,h=baseheight+.8);
+				translate([0,0,(baseheight+.4)/2])
+					Hexagon(cle=cle-1,h=baseheight+.4);
+				translate([0,0,(baseheight+1)/2])
+					Hexagon(cle=cle-4,h=baseheight+1);
 			}
 		}
 		connector_cutouts(10,connectors);
@@ -146,24 +184,34 @@ module connector_cutouts (size,connectors) {
 	diameter = 3;
 	center = 3.4;
 
-		for (i=connectors) {
-			rotate([0,0,i])
-				translate ([size,0,0])
-					union () {
-						intersection () {
-							translate([0,0,1])
-							rotate_extrude(convexity=10)
-								translate ([center,0,0])
-									circle (d=diameter);
-								linear_extrude(2.2)
-									translate ([-10,-10,0])
-										square(size=20);
-									}
-						linear_extrude(2.2)
-							translate([diameter,-1.6,0])
-								square([4,3.2]);
-					}
+		for (i=[0:60:300]) {
+			if(invector(i,connectors)) {
+				rotate([0,0,i])
+					translate ([size,0,0])
+						union () {
+							intersection () {
+								translate([0,0,1])
+								rotate_extrude(convexity=10)
+									translate ([center,0,0])
+										circle (d=diameter);
+									linear_extrude(2.6)
+										translate ([-10,-10,0])
+											square(size=20);
+							}
+							linear_extrude(2.2)
+								translate([diameter,-1.6,0])
+									square([4,3.2]);
+						}
+			} else {
+				rotate([0,0,i])
+					translate([10,0,0])
+						scale([1.4,1.4,1])
+							sphere (r = baseheight-.5);
+			}
+
 		}
+						scale([1.4,1.4,1])
+								sphere (r = baseheight-.5);
 }
 
 

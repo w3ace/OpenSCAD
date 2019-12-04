@@ -30,7 +30,7 @@ bottom_chamfer=1; //[0:off, 1:on]
     scale([x_flatten,y_flatten,z_flatten])
     translate([0,0,(thickness/2)]) 
     union() {
-        difference(){
+        difference(){   
         	union(){
                 
                     if(lipsize && liptype == 1 && bottom_chamfer) {
@@ -77,7 +77,7 @@ bottom_chamfer=1; //[0:off, 1:on]
 
             translate([-1.2,-1,.4])
                 scale ([.35,.35,.35])
-                    import ("../Buttons/flattened sheep.stl", convexity=3);
+                    import ("../Buttons/flattened sheep.stl", convexity=8);
                 }
     for(i=[1:holecount]){
     	rotate([0,0,360/holecount*i]) 
