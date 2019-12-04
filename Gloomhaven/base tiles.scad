@@ -1,19 +1,23 @@
-//============================================================
-// OpenSCAD
-// Lisence
-//============================================================
 /*
+ * Base Tiles - Hexagon Dungeon Tiles
+ * By Craig Wood
+ *
+ * Copyright 2019 Craig Wood - http://github.com/w3ace
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in thehope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * See <http://www.gnu.org/licenses/>.
 
-	Usage:
-	use <Hexagones.scad>;
-	Pour créer des jeux, des têtes de vis...
-
-*/
+ */
 
 
-//------------------------------------------------------------
-// Demo
-//------------------------------------------------------------
 $fn = 25 ;			// OpenSCAD Resolution
 
 
@@ -30,10 +34,15 @@ cle = 33;
 hexheight=38.11;
 
 
-TwoRow(2);
-//basehex(baseheight=4.4,connectors=[0,60,120,180,240,300],texture="water optimized.stl");
 
 
+// TwoRow(2,5.2,"");
+intersection() {
+basehex(baseheight=3.8,connectors=[0,60,120,180,240,300],texture="");
+translate([-20,20,-3])
+	scale([40,40,18])
+	import("Wooden Planks.stl", convexity=10);
+}
 
 // Module for a base tile that is a row of 4 hexes and a row of 5 hexes
 function sumv(v,i,s=0) = (i==s ? v[i] : v[i] + sumv(v,i-1,s));
@@ -41,7 +50,14 @@ function sumv(v,i,s=0) = (i==s ? v[i] : v[i] + sumv(v,i-1,s));
 function invector (value,vector,i=0) = 
 	(value==vector[i] ? 1 : (i==len(vector) ? 0 : 0 + invector(value,vector,i+1))); 
 
-module TwoRow(size) {
+//
+// TwoRow() This module will produce two rows of offset hexes.  
+//    size - the number of hexes in the smaller row - Larger row will have one more.
+//		baseheight - height of the tile without the texture.
+//		texture - reference to an STL file that needs to conform to requirements to be 
+//							placed on top of each hex.
+
+module TwoRow(size,baseheight=3.8,texture="") {
 
 	union() {
 		for(i=[0:size-1]) {
@@ -68,58 +84,11 @@ module TwoRow(size) {
 	}
 }
 
-module base3v4() {
+//
+// module connector()
+//
+//
 
-	union() {
-		for(i=[0:2]) {
-			translate([cle*i,0,0])
-				if(i==0) {
-					basehex(baseheight=3.8,connectors=[120,180,240,300],texture="");
-				} else {
-					basehex(baseheight=3.8,connectors=[240,300],texture="");
-				}
-		}
-		translate([cle*4,0,0])
-			basehex(baseheight=3.8,connectors=[0,60,240,300],texture="");			
-		for(i=[1:2]) {
-			translate([cle*i-(cle/2),(hexheight*.75),0])
-				if(i==1) {
-					basehex(baseheight=3.8,connectors=[60,120,180],texture="");
-				} else {
-					basehex(baseheight=3.8,connectors=[60,120],texture="");
-				}
-		}
-		translate([cle*4-(cle/2),(hexheight*.75),0])
-			basehex(baseheight=3.8,connectors=[0,60,120],texture="");				
-		 
-	}
-}
-
-/*
-
-//connector(connector_center, connector_diameter);
-union() {
-	for(i=[0:3]) {
-		translate([cle*i,0,0])
-			difference () {
-				if(i==0) {
-					basehex([60,120,180,240,300]);
-				} else {
-					if(i==3) {
-						basehex([0,60,120,240,300]);
-					} else {
-						basehex([60,120,240,300]);
-					}
-				}
-				translate ([-20,-20,4])
-					scale ([.5,.5,.5])
-				       import ("water reduced.stl", convexity=10);
-			}
-	}
-}*/
-
-module waterhex(position=0) {
-	}
 
 module connector(center=3.4,diameter=3) {
 
@@ -153,25 +122,25 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 
 	difference () {
 		union() {
-			hull() {
+/*			hull() {
 				translate([0,0,(baseheight/2)])
 					Hexagon(cle=cle-.6,h=baseheight);
 				translate([0,0,baseheight/2+.4])
 					Hexagon(cle=cle,h=baseheight-.8);
-				}
+				} */
 			hull() {
 				translate([0,0,(baseheight+.4)/2])
 					Hexagon(cle=cle-1,h=baseheight+.4);
 				translate([0,0,(baseheight+1)/2])
 					Hexagon(cle=cle-4,h=baseheight+1);
-			}
+			} 
 		}
-		connector_cutouts(10,connectors);
-		if( texture != "") {
-			translate ([-20,-20,baseheight+1.2])
-				scale ([.5,.5,.5])
-			       import (texture, convexity=10);
-		}
+	//	connector_cutouts(10,connectors);
+	//	if( texture != "") {
+//			translate ([-20,-20,baseheight+1.2])
+	//			scale ([.5,.5,.5])
+	//		       import (texture, convexity=10);
+	//	}
 	} 
 }
 
