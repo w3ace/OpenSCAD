@@ -12,46 +12,50 @@
 
 
 // instantiate one floor tile
-rough_bricks();
+
+minkowski () {
+    crack_maker(0,0,3,3,30,30,1);
+    cube(.5);
+}
+//rough_bricks(1,4);
 //simple_cobbles();
 
-module rough_bricks() {
+module rough_bricks(length=2,num_blocks=8) {
 
     // make the floor tile of overlapping bricks
-    div = 8;
     tile_size = 25.4;
     x_factor = 1.5;
     y_factor = 1.1;
 
-    for (x=[0:div-1], y=[0:div-1]) {
-        translate([1, 1, 0] * tile_size/div/2)
-         translate([((y%2==0)? x*x_factor*2*.9 : x*x_factor*2*.9-x_factor*2*.45), y, 0]  * tile_size/div)
-        // translate([x*2+x, y, 0]  * tile_size/div)
+    for (x=[0:num_blocks-1], y=[0:num_blocks-1]) {
+        translate([1, 1, 0] * tile_size/num_blocks/2)
+         translate([((y%2==0)? x*x_factor*length*.9 : x*x_factor*length*.9-x_factor*length*.45), y, 0]  * tile_size/num_blocks)
+        // translate([x*2+x, y, 0]  * tile_size/num_blocks)
         cobble ([
-            tile_size/div*x_factor, 
-            tile_size/div*y_factor, tile_size/8], 
-            2, 0.75, 12, 4);
+            tile_size/num_blocks*x_factor, 
+            tile_size/num_blocks*y_factor, tile_size/8], 
+            length, 0.75, 12, 4);
     }
 }
 
 
 // make a floor tile from many bricks
-module simple_cobbles() {
+module simple_cobbles(num_blocks=8) {
 
     // make the floor tile of overlapping bricks
-    div = 8;
+    num_blocks = 8;
     tile_size = 25.4;
     x_factor = 1.25;
     y_factor = 1.1;
 
-    for (x=[0:div-1], y=[0:div-1]) {
+    for (x=[0:num_blocks-1], y=[0:num_blocks-1]) {
         translate([1, 1, 0] 
-            * tile_size/div/2)
+            * tile_size/num_blocks/2)
         translate([x, y, 0] 
-            * tile_size/div)
+            * tile_size/num_blocks)
         cobble ([
-            tile_size/div*x_factor, 
-            tile_size/div*y_factor, tile_size/8], 
+            tile_size/num_blocks*x_factor, 
+            tile_size/num_blocks*y_factor, tile_size/8], 
             1, 0.75, 12, 4);
     }
 }
@@ -80,5 +84,29 @@ module cobble (s=[8, 4, 3], x=1, tau=0.75, k=11, cubes=4) {
     }
 }
 
+module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,crack_width,i=0,j=0) {
 
+    x1 = rands((x_len>0 ? x : x+x_len),
+                (x_len>0 ? x+x_len : x),1);
+    y1 = rands((y_len>0 ? y : y+y_len),
+                (y_len>0 ? y+y_len : y),1);
+
+    branch = rands(1,100,1);
+   if(branch[0]<4-j) { 
+      echo ("new branch");
+              crack_maker (x,y,x_len,-y_len,x_total_length,y_total_length,crack_width,i,j+1);
+    }
+    if(branch[0]>96+i) { 
+      echo ("new branch");
+              crack_maker (x,y,-x_len,y_len,x_total_length,y_total_length,crack_width,i+1,j);
+    }
+    echo (x,y,x1[0],y1[0],x_len,y_len);
+    linear_extrude(1)
+        polygon(points=[[x,y],[x,y-crack_width],[x1[0],y1[0]-crack_width],[x1[0],y1[0]]]);
+
+    if(x1[0] < x_total_length && y1[0] < y_total_length && y1[0] > 0 && x1[0]> 0) {
+  
+         crack_maker(x1[0],y1[0],x_len,y_len,x_total_length,y_total_length,crack_width,i);
+     }
+}
 
