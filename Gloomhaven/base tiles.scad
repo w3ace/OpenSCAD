@@ -34,14 +34,21 @@ cle = 33;
 hexheight=38.11;
 
 
+twoRow(2, 3.8, texture="4 plank dutchmogul terrain.stl");
 
+//woodPlankMaker();
 
-// TwoRow(2,5.2,"");
-intersection() {
-basehex(baseheight=3.8,connectors=[0,60,120,180,240,300],texture="");
-translate([-20,20,-3])
-	scale([40,40,18])
-	import("Wooden Planks.stl", convexity=10);
+module woodPlankMaker() {
+
+	scale([1/cle,1/cle,1/cle])
+	translate([0,0,-3.5])
+	intersection() {
+		BaseTerrainMaker(baseheight=3.8,connectors=[0,60,120,180,240,300],texture="");
+		rotate ([0,0,90])
+			translate ([-18.9,22,3.5])
+				scale([1.5,1.9,1.5])
+				import("4 Wood Planks Dutchmogul.stl", convexity=10);
+	}
 }
 
 // Module for a base tile that is a row of 4 hexes and a row of 5 hexes
@@ -57,29 +64,30 @@ function invector (value,vector,i=0) =
 //		texture - reference to an STL file that needs to conform to requirements to be 
 //							placed on top of each hex.
 
-module TwoRow(size,baseheight=3.8,texture="") {
+
+module twoRow(size,baseheight=3.8,texture="") {
 
 	union() {
 		for(i=[0:size-1]) {
 			translate([cle*i,0,0])
 				if(i==0) {
-					basehex(baseheight=3.8,connectors=[120,180,240,300],texture="");
+					basehex(baseheight,[120,180,240,300],texture);
 				} else {
-					basehex(baseheight=3.8,connectors=[240,300],texture="");
+					basehex(baseheight,[240,300],texture);
 				}
 		}
 		translate([cle*size,0,0])
-			basehex(baseheight=3.8,connectors=[0,60,240,300],texture="");			
+			basehex(baseheight,[0,60,240,300],texture);			
 		for(i=[1:size-1]) {
 			translate([cle*i-(cle/2),(hexheight*.75),0])
 				if(i==1) {
-					basehex(baseheight=3.8,connectors=[60,120,180],texture="");
+					basehex(baseheight,[60,120,180],texture);
 				} else {
-					basehex(baseheight=3.8,connectors=[60,120],texture="");
+					basehex(baseheight,[60,120],texture);
 				}
 		}
 		translate([cle*size-(cle/2),(hexheight*.75),0])
-			basehex(baseheight=3.8,connectors=[0,60,120],texture="");				
+			basehex(baseheight,[0,60,120],texture);				
 		 
 	}
 }
@@ -118,29 +126,38 @@ module connector(center=3.4,diameter=3) {
 module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 
 	cle = 33;
-//	baseheight = 2.8;
 
-	difference () {
+	 difference () {
 		union() {
-/*			hull() {
+			hull() {
 				translate([0,0,(baseheight/2)])
 					Hexagon(cle=cle-.6,h=baseheight);
 				translate([0,0,baseheight/2+.4])
 					Hexagon(cle=cle,h=baseheight-.8);
-				} */
-			hull() {
-				translate([0,0,(baseheight+.4)/2])
-					Hexagon(cle=cle-1,h=baseheight+.4);
-				translate([0,0,(baseheight+1)/2])
-					Hexagon(cle=cle-4,h=baseheight+1);
-			} 
+				} 
+			
+			// Apply Texture or smooth terrain
+			if( texture != "") {
+				translate([0,0,baseheight])
+					scale([cle,cle,cle])
+				    	import (texture);
+			} else {
+				hull() {
+					translate([0,0,(baseheight+.4)/2])
+						Hexagon(cle=cle-1,h=baseheight+.4);
+					translate([0,0,(baseheight+1)/2])
+						Hexagon(cle=cle-4,h=baseheight+1);
+
+
+				}
+			}
 		}
-	//	connector_cutouts(10,connectors);
-	//	if( texture != "") {
-//			translate ([-20,-20,baseheight+1.2])
-	//			scale ([.5,.5,.5])
-	//		       import (texture, convexity=10);
-	//	}
+		connector_cutouts(10,connectors);
+		if( texture != "") {
+			translate ([-20,-20,baseheight+1.2])
+				scale ([.5,.5,.5])
+			       import (texture, convexity=10);
+		}
 	} 
 }
 
@@ -177,6 +194,23 @@ module connector_cutouts (size,connectors) {
 		}
 						scale([1.4,1.4,1])
 								sphere (r = baseheight-.5);
+}
+
+
+module BaseTerrainMaker (baseheight=2.8, connectors=[0:60:300], texture="") {
+
+	cle = 33;
+
+	difference () {
+		union() {
+			hull() {
+				translate([0,0,(baseheight+.4)/2])
+					Hexagon(cle=cle-1,h=baseheight+.4);
+				translate([0,0,(baseheight+1)/2])
+					Hexagon(cle=cle-4,h=baseheight+1);
+			} 
+		}
+	} 
 }
 
 
