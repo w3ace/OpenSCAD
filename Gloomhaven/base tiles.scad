@@ -2,6 +2,15 @@
  * Base Tiles - Hexagon Dungeon Tiles
  * By Craig Wood
  *
+ *    ▄▄▄█████▓ ██░ ██  ██▓ ███▄    █    ▓█████▄  █    ██  ███▄    █   ▄████ ▓█████  ▒█████   ███▄    █ 
+ *    ▓  ██▒ ▓▒▓██░ ██▒▓██▒ ██ ▀█   █    ▒██▀ ██▌ ██  ▓██▒ ██ ▀█   █  ██▒ ▀█▒▓█   ▀ ▒██▒  ██▒ ██ ▀█   █ 
+ *    ▒ ▓██░ ▒░▒██▀▀██░▒██▒▓██  ▀█ ██▒   ░██   █▌▓██  ▒██░▓██  ▀█ ██▒▒██░▄▄▄░▒███   ▒██░  ██▒▓██  ▀█ ██▒
+ *    ░ ▓██▓ ░ ░▓█ ░██ ░██░▓██▒  ▐▌██▒   ░▓█▄   ▌▓▓█  ░██░▓██▒  ▐▌██▒░▓█  ██▓▒▓█  ▄ ▒██   ██░▓██▒  ▐▌██▒
+ *      ▒██▒ ░ ░▓█▒░██▓░██░▒██░   ▓██░   ░▒████▓ ▒▒█████▓ ▒██░   ▓██░░▒▓███▀▒░▒████▒░ ████▓▒░▒██░   ▓██░
+ *      ▒ ░░    ▒ ░░▒░▒░▓  ░ ▒░   ▒ ▒     ▒▒▓  ▒ ░▒▓▒ ▒ ▒ ░ ▒░   ▒ ▒  ░▒   ▒ ░░ ▒░ ░░ ▒░▒░▒░ ░ ▒░   ▒ ▒ 
+ *        ░     ▒ ░▒░ ░ ▒ ░░ ░░   ░ ▒░    ░ ▒  ▒ ░░▒░ ░ ░ ░ ░░   ░ ▒░  ░   ░  ░ ░  ░  ░ ▒ ▒░ ░ ░░   ░ ▒░
+ *      ░       ░  ░░ ░ ▒ ░   ░   ░ ░     ░ ░  ░  ░░░ ░ ░    ░   ░ ░ ░ ░   ░    ░   ░ ░ ░ ▒     ░   ░ ░ 
+ *
  * Copyright 2019 Craig Wood - http://github.com/w3ace
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +27,16 @@
  */
 
 
-$fn = 25 ;			// OpenSCAD Resolution
 
+//  ██╗███╗   ██╗██╗████████╗     ██╗██╗ 
+//  ██║████╗  ██║██║╚══██╔══╝    ██╔╝╚██╗
+//  ██║██╔██╗ ██║██║   ██║       ██║  ██║
+//  ██║██║╚██╗██║██║   ██║       ██║  ██║
+//  ██║██║ ╚████║██║   ██║       ╚██╗██╔╝
+//  ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝        ╚═╝╚═╝ 
+//                                       
+
+$fn = 25 ;			// OpenSCAD Resolution
 
 // These need to stay in sync from hex tile to connector !! 
 // Use slop to try and adjust one or the other
@@ -27,19 +44,17 @@ $fn = 25 ;			// OpenSCAD Resolution
 connector_center = 3.4;
 connector_diameter = 2.6;
 
+// Hex Sizes
 
-
-baseheight=2.4;
-cle = 33;
-hexheight=38.11;
+baseheight=2.4;  	// Produces a 4mm tile 
+cle = 33;					// 33mm per side for Gloomhaven Tiles
+hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on hex plates
 
 
 
 //basehex(baseheight,[0,120,240],"cracks");
 //oneRow (5,baseheight,"cracks");
-twoRow (2,baseheight,"cracks");
-//threeRowEqual(2,baseheight,"cracks");
-//threeRowHex(3,baseheight,"cracks");
+threeRow (3,baseheight,"cracks",0);
 
 
 
