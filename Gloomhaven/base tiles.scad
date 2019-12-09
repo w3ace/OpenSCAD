@@ -29,142 +29,64 @@ connector_diameter = 2.6;
 
 
 
-baseheight=3.6;
+baseheight=2.4;
 cle = 33;
 hexheight=38.11;
 
 
 
-// basehex(3.8,[0,60,120,180,240,300],"cracks");
-
-twoRow(1, 3.8, texture="cracks");
-//threeRowEqual(2, 3.8, texture="cracks");
-
-//woodPlankMaker();
-
-module woodPlankMaker() {
-
-	scale([1/cle,1/cle,1/cle])
-	translate([0,0,-3.5])
-	intersection() {
-		BaseTerrainMaker(baseheight=3.8,connectors=[0,60,120,180,240,300],texture="");
-		rotate ([0,0,90])
-			translate ([-18.9,22,3.5])
-				scale([1.5,1.9,1.5])
-				import("4 Wood Planks Dutchmogul.stl", convexity=10);
-	}
-}
-
-// Module for a base tile that is a row of 4 hexes and a row of 5 hexes
-function sumv(v,i,s=0) = (i==s ? v[i] : v[i] + sumv(v,i-1,s));
-
-function invector (value,vector,i=0) = 
-	(value==vector[i] ? 1 : (i==len(vector) ? 0 : 0 + invector(value,vector,i+1))); 
+//basehex(baseheight,[0,120,240],"cracks");
+//oneRow (5,baseheight,"cracks");
+twoRow (2,baseheight,"cracks");
+//threeRowEqual(2,baseheight,"cracks");
+//threeRowHex(3,baseheight,"cracks");
 
 
-module threeRowEqual(size,baseheight=3.8,texture="") {
 
-	union() {
-
-		// First Row is has 'size' hexes
-		for(i=[1:size-1]) {
-			translate([cle*i-(cle/2),0,0])
-				if(i==1) {
-					basehex(baseheight,[180,240,300],texture);
-				} else {
-					basehex(baseheight,[240,300],texture);
-				}
-		}
-		translate([cle*size-(cle/2),0,0])
-			basehex(baseheight,[0,240,300],texture);				
-
-		// Middle row is one larger than 'size'
-		for(i=[1:size-1]) {
-			translate([cle*i,hexheight*.75,0])
-				if(i==0) {
-					basehex(baseheight,[180],texture);
-				} else {
-					basehex(baseheight,[],texture);
-				}
-		}
-		translate([cle*size,hexheight*.75,0])
-			basehex(baseheight,[0,60,300],texture);			
-
-		// Last row is 'size'
-		for(i=[1:size-1]) {
-			translate([cle*i-(cle/2),(hexheight*1.5),0])
-				if(i==1) {
-					basehex(baseheight,[60,120,180],texture);
-				} else {
-					basehex(baseheight,[60,120],texture);
-				}
-		}
-		translate([cle*size-(cle/2),(hexheight*1.5),0])
-			basehex(baseheight,[0,60,120],texture);				
-	}
-}
+//  ██╗  ██╗███████╗██╗  ██╗    ██████╗ ██╗      █████╗ ████████╗███████╗███████╗
+//  ██║  ██║██╔════╝╚██╗██╔╝    ██╔══██╗██║     ██╔══██╗╚══██╔══╝██╔════╝██╔════╝
+//  ███████║█████╗   ╚███╔╝     ██████╔╝██║     ███████║   ██║   █████╗  ███████╗
+//  ██╔══██║██╔══╝   ██╔██╗     ██╔═══╝ ██║     ██╔══██║   ██║   ██╔══╝  ╚════██║
+//  ██║  ██║███████╗██╔╝ ██╗    ██║     ███████╗██║  ██║   ██║   ███████╗███████║
+//  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝    ╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝
+//                                                                               
 
 //
-// threeRowHex() This module will produce three rows of hexes with the middle row being one larger 
-// 						than the first and last  
+// oneRow() This module will produce one row of Hexes
+//
 //    size - the number of hexes in the smaller row - Larger row will have one more.
 //		baseheight - height of the tile without the texture.
 //		texture - reference to an STL file that needs to conform to requirements to be 
 //							placed on top of each hex.
 
+module oneRow(size,baseheight=3.8,texture="") {
 
-module threeRowHex(size,baseheight=3.8,texture="") {
 
-	union() {
-
-		// First Row is has 'size' hexes
-		for(i=[1:size-1]) {
-			translate([cle*i-(cle/2),0,0])
-				if(i==1) {
-					basehex(baseheight,[180,240,300],texture);
-				} else {
-					basehex(baseheight,[240,300],texture);
-				}
+	if(size>1) {
+		union() {
+			for(i=[0:size-2]) {
+				translate([cle*i,0,0])
+					if(i==0) {
+						basehex(baseheight,[60,120,180,240,300],texture);
+					} else {
+						basehex(baseheight,[60,120,240,300],texture);
+					}
+			}
+			translate([cle*(size-1),0,0])
+				basehex(baseheight,[0,60,120,240,300],texture);		
 		}
-		translate([cle*size-(cle/2),0,0])
-			basehex(baseheight,[0,240,300],texture);				
-
-		// Middle row is one larger than 'size'
-		for(i=[0:size-1]) {
-			translate([cle*i,hexheight*.75,0])
-				if(i==0) {
-					basehex(baseheight,[120,180,240],texture);
-				} else {
-					basehex(baseheight,[],texture);
-				}
-		}
-		translate([cle*size,hexheight*.75,0])
-			basehex(baseheight,[0,60,300],texture);			
-
-		// Last row is 'size'
-		for(i=[1:size-1]) {
-			translate([cle*i-(cle/2),(hexheight*1.5),0])
-				if(i==1) {
-					basehex(baseheight,[60,120,180],texture);
-				} else {
-					basehex(baseheight,[60,120],texture);
-				}
-		}
-		translate([cle*size-(cle/2),(hexheight*1.5),0])
-			basehex(baseheight,[0,60,120],texture);				
 	}
 }
-
 
 //
 // twoRow() This module will produce two rows of offset hexes.  
+//
 //    size - the number of hexes in the smaller row - Larger row will have one more.
 //		baseheight - height of the tile without the texture.
 //		texture - reference to an STL file that needs to conform to requirements to be 
 //							placed on top of each hex.
 
-
-module twoRow(size,baseheight=3.8,texture="") {
+module twoRow(size=2,baseheight=3.8,texture="") {
 
 	union() {
 		for(i=[0:size-1]) {
@@ -177,7 +99,7 @@ module twoRow(size,baseheight=3.8,texture="") {
 		}
 		translate([cle*size,0,0])
 			basehex(baseheight,[0,60,240,300],texture);
-		if(size > 2)	{		
+		if(size > 1)	{		
 			for(i=[1:size-1]) {
 				translate([cle*i-(cle/2),(hexheight*.75),0])
 					if(i==1) {
@@ -188,36 +110,130 @@ module twoRow(size,baseheight=3.8,texture="") {
 			}
 			translate([cle*size-(cle/2),(hexheight*.75),0])
 				basehex(baseheight,[0,60,120],texture);
-		}	
-		translate([cle*size-(cle/2),(hexheight*.75),0])
-			basehex(baseheight,[0,60,120,180],texture);		 
+		}	else {
+			translate([cle*size-(cle/2),(hexheight*.75),0])
+				basehex(baseheight,[0,60,120,180],texture);		 
+		}
 	}
 }
 
 //
-// oneRow() This module will produce one row of Hexes
+// threeRow() This module will produce three rows of hexes 
+//
 //    size - the number of hexes in the smaller row - Larger row will have one more.
 //		baseheight - height of the tile without the texture.
 //		texture - reference to an STL file that needs to conform to requirements to be 
 //							placed on top of each hex.
+//		midrow - [0:1] This determines the starting position of the middle row. 
 
-
-module oneRow(size,baseheight=3.8,texture="") {
+module threeRow(size,baseheight=3.8,texture="",midrow=0) {
 
 	union() {
-		for(i=[0:size-1]) {
-			translate([cle*i,0,0])
-				if(i==0) {
-					basehex(baseheight,[60,120,180,240,300],texture);
+
+		// First Row is has 'size' hexes
+		for(i=[1:size-1]) {
+			translate([cle*i-(cle/2),0,0])
+				if(i==1) {
+					basehex(baseheight,[180,240,300],texture);
 				} else {
-					basehex(baseheight,[60,120,240,300],texture);
+					basehex(baseheight,[240,300],texture);
 				}
 		}
-		translate([cle*size,0,0])
-			basehex(baseheight,[0,60,120,240,300],texture);		
- 	}
+		translate([cle*size-(cle/2),0,0])
+			basehex(baseheight,[0,240,300],texture);				
+
+		// Middle row is one larger than 'size'
+		for(i=[midrow:size-1]) {
+			translate([cle*i,hexheight*.75,0])
+				if(i==0) {
+					basehex(baseheight,(midrow==0) ? [60,120,180] : [180],texture);
+				} else {
+					basehex(baseheight,[],texture);
+				}
+		}
+		translate([cle*size,hexheight*.75,0])
+			basehex(baseheight,[0,60,300],texture);			
+
+		// Last row is 'size'
+		for(i=[1:size-1]) {
+			translate([cle*i-(cle/2),(hexheight*1.5),0])
+				if(i==1) {
+					basehex(baseheight,[60,120,180],texture);
+				} else {
+					basehex(baseheight,[60,120],texture);
+				}
+		}
+		translate([cle*size-(cle/2),(hexheight*1.5),0])
+			basehex(baseheight,[0,60,120],texture);				
+	}
 }
 
+
+//  ██████╗  █████╗ ███████╗███████╗    ██╗  ██╗███████╗██╗  ██╗
+//  ██╔══██╗██╔══██╗██╔════╝██╔════╝    ██║  ██║██╔════╝╚██╗██╔╝
+//  ██████╔╝███████║███████╗█████╗      ███████║█████╗   ╚███╔╝ 
+//  ██╔══██╗██╔══██║╚════██║██╔══╝      ██╔══██║██╔══╝   ██╔██╗ 
+//  ██████╔╝██║  ██║███████║███████╗    ██║  ██║███████╗██╔╝ ██╗
+//  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+//                                                              
+
+
+
+module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
+
+	cle = 33;
+
+	 difference () {
+		union() {
+			hull() {
+				translate([0,0,(baseheight/2)])
+					Hexagon(cle=cle-.6,h=baseheight);
+				translate([0,0,baseheight/2+.4])
+					Hexagon(cle=cle,h=baseheight-.8);
+				} 
+			
+			// Apply Texture or smooth terrain
+			if( texture != "" && texture != "cracks") {
+				translate([0,0,baseheight])
+					scale([cle,cle,cle])
+				    	import (texture);
+			} else {
+				hull() {
+					translate([0,0,(baseheight+.6)/2])
+						Hexagon(cle=cle-1,h=baseheight+.6);
+					translate([0,0,(baseheight+1.6)/2])
+						Hexagon(cle=cle-4,h=baseheight+1.6);
+
+
+				}
+			}
+		}
+		connector_cutouts(10,connectors);
+		if( texture == "cracks") {
+			minkowski() {
+				r1 = rands(0,5,1);
+					rotate([0,0,(r1[0]*60)])
+						translate([-20,-20,baseheight+.6])
+							crack_maker(0,0,3,2.5,40,40,1,0);
+						cube(size=.5);
+				}
+		} else {
+			if( texture != "") {
+				translate ([-20,-20,baseheight+1.2])
+					scale ([.5,.5,.5])
+				       import (texture, convexity=10);
+			}
+		}
+	} 
+}
+
+//   ██████╗ ██████╗ ███╗   ██╗███╗   ██╗███████╗ ██████╗████████╗ ██████╗ ██████╗ ███████╗
+//  ██╔════╝██╔═══██╗████╗  ██║████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗██╔════╝
+//  ██║     ██║   ██║██╔██╗ ██║██╔██╗ ██║█████╗  ██║        ██║   ██║   ██║██████╔╝███████╗
+//  ██║     ██║   ██║██║╚██╗██║██║╚██╗██║██╔══╝  ██║        ██║   ██║   ██║██╔══██╗╚════██║
+//  ╚██████╗╚██████╔╝██║ ╚████║██║ ╚████║███████╗╚██████╗   ██║   ╚██████╔╝██║  ██║███████║
+//   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝
+//                                                                                         
 
 //
 // module connector()
@@ -250,58 +266,15 @@ module connector(center=3.4,diameter=3) {
 					}	
 }
 
-module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
-
-	cle = 33;
-
-	 difference () {
-		union() {
-			hull() {
-				translate([0,0,(baseheight/2)])
-					Hexagon(cle=cle-.6,h=baseheight);
-				translate([0,0,baseheight/2+.4])
-					Hexagon(cle=cle,h=baseheight-.8);
-				} 
-			
-			// Apply Texture or smooth terrain
-			if( texture != "" && texture != "cracks") {
-				translate([0,0,baseheight])
-					scale([cle,cle,cle])
-				    	import (texture);
-			} else {
-				hull() {
-					translate([0,0,(baseheight+.4)/2])
-						Hexagon(cle=cle-1,h=baseheight+.4);
-					translate([0,0,(baseheight+1)/2])
-						Hexagon(cle=cle-4,h=baseheight+1);
-
-
-				}
-			}
-		}
-		connector_cutouts(10,connectors);
-		if( texture == "cracks") {
-			minkowski() {
-				r1 = rands(0,5,1);
-					rotate([0,0,(r1[0]*60)])
-						translate([-20,-20,baseheight])
-							crack_maker(0,0,3,2.5,40,40,1,0);
-						cube(size=.5);
-				}
-		} else {
-			if( texture != "") {
-				translate ([-20,-20,baseheight+1.2])
-					scale ([.5,.5,.5])
-				       import (texture, convexity=10);
-			}
-		}
-	} 
-}
+//  Cutouts
 
 module connector_cutouts (size,connectors) {
 
 	diameter = 3;
 	center = 3.4;
+
+		// Loop through the size sides of the Hexagon and if it is a parameterized
+		// connector location than build the cutout, otherwise use a dimple
 
 		for (i=[0:60:300]) {
 			if(invector(i,connectors)) {
@@ -317,20 +290,26 @@ module connector_cutouts (size,connectors) {
 										translate ([-10,-10,0])
 											square(size=20);
 							}
-							linear_extrude(2.2)
+							linear_extrude(1.8)
 								translate([diameter,-1.6,0])
 									square([4,3.2]);
 						}
+
 			} else {
+
+				// Dimple instead of connector
+
 				rotate([0,0,i])
 					translate([10,0,0])
-						scale([1.4,1.4,1])
+						scale([1.8,1.8,.4])
 							sphere (r = baseheight-.5);
 			}
-
 		}
-						scale([1.4,1.4,1])
-								sphere (r = baseheight-.5);
+
+		// Center Dimple
+		translate([0,0,0])
+			scale([1.8,1.8,.4])
+				sphere (r = baseheight-.5);
 }
 
 
@@ -368,21 +347,20 @@ module Hexagon(cle,h)
 		rotate([0,0,2*angle])
 			cube([cle,cote,h],center=true);
 	}
-
-// Vérification par un cercle de taille cle
-//	#cylinder(r=cle/2,h=2*h,center=true);
-//	%circle(r=cote,center=true);
-//	#cube([cote,cote,1]);
 }
 
-//------------------------------------------------------------
-// Fonction cotangente
-// Permet d'avoir les bones dimensions
-// utiliser $fn n'est pas bon
-//------------------------------------------------------------
-function cot(x)=1/tan(x);
 
-//==EOF=======================================================
+
+//  ████████╗███████╗██████╗ ██████╗  █████╗ ██╗███╗   ██╗
+//  ╚══██╔══╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██║████╗  ██║
+//     ██║   █████╗  ██████╔╝██████╔╝███████║██║██╔██╗ ██║
+//     ██║   ██╔══╝  ██╔══██╗██╔══██╗██╔══██║██║██║╚██╗██║
+//     ██║   ███████╗██║  ██║██║  ██║██║  ██║██║██║ ╚████║
+//     ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
+//                                                        
+
+// Module crack_maker creates random channels in the top of a hex. This is recursive and only allows 
+//		one level of branching
 
 module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,crack_width=.5,i=0) {
 
@@ -392,11 +370,11 @@ module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,
                 (y_len>0 ? y+y_len : y),1);
 
     branch = rands(1,100,1);
-   if(branch[0]<5 && i==0) { 
-              crack_maker (x,y,x_len,-y_len,x_total_length,y_total_length,crack_width,1);
+  	if(branch[0]<5 && i==0) { 
+  		crack_maker (x,y,x_len,-y_len,x_total_length,y_total_length,crack_width,1);
     }
     if(branch[0]>95 && i==0) { 
-              crack_maker (x,y,-x_len,y_len,x_total_length,y_total_length,crack_width,1);
+    	crack_maker (x,y,-x_len,y_len,x_total_length,y_total_length,crack_width,1);
     }
 
     linear_extrude(1)
@@ -407,3 +385,22 @@ module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,
          crack_maker(x1[0],y1[0],x_len,y_len,x_total_length,y_total_length,crack_width,i);
      }
 }
+
+
+
+//  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+//  ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+//  █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+//  ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+//  ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+//  ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+//                                                                            
+
+
+
+
+
+function invector (value,vector,i=0) = 
+	(value==vector[i] ? 1 : (i==len(vector) ? 0 : 0 + invector(value,vector,i+1))); 
+
+function cot(x)=1/tan(x);
