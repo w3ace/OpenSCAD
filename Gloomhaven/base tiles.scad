@@ -242,6 +242,29 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 	} 
 }
 
+
+//------------------------------------------------------------
+// Hexagone
+// cle	écart, ex: clé de 12 alors cle=12
+// h		hauteur
+//------------------------------------------------------------
+module Hexagon(cle,h)
+{
+	angle = 360/6;		// 6 pans
+	cote = cle * cot(angle);
+
+	union()
+	{
+		rotate([0,0,0])
+			cube([cle,cote,h],center=true);
+		rotate([0,0,angle])
+			cube([cle,cote,h],center=true);
+		rotate([0,0,2*angle])
+			cube([cle,cote,h],center=true);
+	}
+}
+
+
 //   ██████╗ ██████╗ ███╗   ██╗███╗   ██╗███████╗ ██████╗████████╗ ██████╗ ██████╗ ███████╗
 //  ██╔════╝██╔═══██╗████╗  ██║████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗██╔════╝
 //  ██║     ██║   ██║██╔██╗ ██║██╔██╗ ██║█████╗  ██║        ██║   ██║   ██║██████╔╝███████╗
@@ -342,27 +365,6 @@ module BaseTerrainMaker (baseheight=2.8, connectors=[0:60:300], texture="") {
 		}
 }
 
-
-//------------------------------------------------------------
-// Hexagone
-// cle	écart, ex: clé de 12 alors cle=12
-// h		hauteur
-//------------------------------------------------------------
-module Hexagon(cle,h)
-{
-	angle = 360/6;		// 6 pans
-	cote = cle * cot(angle);
-
-	union()
-	{
-		rotate([0,0,0])
-			cube([cle,cote,h],center=true);
-		rotate([0,0,angle])
-			cube([cle,cote,h],center=true);
-		rotate([0,0,2*angle])
-			cube([cle,cote,h],center=true);
-	}
-}
 
 
 
