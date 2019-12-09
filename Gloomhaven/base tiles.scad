@@ -34,7 +34,11 @@ cle = 33;
 hexheight=38.11;
 
 
-twoRow(2, 3.8, texture="4 plank dutchmogul terrain.stl");
+
+// basehex(3.8,[0,60,120,180,240,300],"cracks");
+
+twoRow(1, 3.8, texture="cracks");
+//threeRowEqual(2, 3.8, texture="cracks");
 
 //woodPlankMaker();
 
@@ -57,8 +61,103 @@ function sumv(v,i,s=0) = (i==s ? v[i] : v[i] + sumv(v,i-1,s));
 function invector (value,vector,i=0) = 
 	(value==vector[i] ? 1 : (i==len(vector) ? 0 : 0 + invector(value,vector,i+1))); 
 
+
+module threeRowEqual(size,baseheight=3.8,texture="") {
+
+	union() {
+
+		// First Row is has 'size' hexes
+		for(i=[1:size-1]) {
+			translate([cle*i-(cle/2),0,0])
+				if(i==1) {
+					basehex(baseheight,[180,240,300],texture);
+				} else {
+					basehex(baseheight,[240,300],texture);
+				}
+		}
+		translate([cle*size-(cle/2),0,0])
+			basehex(baseheight,[0,240,300],texture);				
+
+		// Middle row is one larger than 'size'
+		for(i=[1:size-1]) {
+			translate([cle*i,hexheight*.75,0])
+				if(i==0) {
+					basehex(baseheight,[180],texture);
+				} else {
+					basehex(baseheight,[],texture);
+				}
+		}
+		translate([cle*size,hexheight*.75,0])
+			basehex(baseheight,[0,60,300],texture);			
+
+		// Last row is 'size'
+		for(i=[1:size-1]) {
+			translate([cle*i-(cle/2),(hexheight*1.5),0])
+				if(i==1) {
+					basehex(baseheight,[60,120,180],texture);
+				} else {
+					basehex(baseheight,[60,120],texture);
+				}
+		}
+		translate([cle*size-(cle/2),(hexheight*1.5),0])
+			basehex(baseheight,[0,60,120],texture);				
+	}
+}
+
 //
-// TwoRow() This module will produce two rows of offset hexes.  
+// threeRowHex() This module will produce three rows of hexes with the middle row being one larger 
+// 						than the first and last  
+//    size - the number of hexes in the smaller row - Larger row will have one more.
+//		baseheight - height of the tile without the texture.
+//		texture - reference to an STL file that needs to conform to requirements to be 
+//							placed on top of each hex.
+
+
+module threeRowHex(size,baseheight=3.8,texture="") {
+
+	union() {
+
+		// First Row is has 'size' hexes
+		for(i=[1:size-1]) {
+			translate([cle*i-(cle/2),0,0])
+				if(i==1) {
+					basehex(baseheight,[180,240,300],texture);
+				} else {
+					basehex(baseheight,[240,300],texture);
+				}
+		}
+		translate([cle*size-(cle/2),0,0])
+			basehex(baseheight,[0,240,300],texture);				
+
+		// Middle row is one larger than 'size'
+		for(i=[0:size-1]) {
+			translate([cle*i,hexheight*.75,0])
+				if(i==0) {
+					basehex(baseheight,[120,180,240],texture);
+				} else {
+					basehex(baseheight,[],texture);
+				}
+		}
+		translate([cle*size,hexheight*.75,0])
+			basehex(baseheight,[0,60,300],texture);			
+
+		// Last row is 'size'
+		for(i=[1:size-1]) {
+			translate([cle*i-(cle/2),(hexheight*1.5),0])
+				if(i==1) {
+					basehex(baseheight,[60,120,180],texture);
+				} else {
+					basehex(baseheight,[60,120],texture);
+				}
+		}
+		translate([cle*size-(cle/2),(hexheight*1.5),0])
+			basehex(baseheight,[0,60,120],texture);				
+	}
+}
+
+
+//
+// twoRow() This module will produce two rows of offset hexes.  
 //    size - the number of hexes in the smaller row - Larger row will have one more.
 //		baseheight - height of the tile without the texture.
 //		texture - reference to an STL file that needs to conform to requirements to be 
@@ -77,20 +176,48 @@ module twoRow(size,baseheight=3.8,texture="") {
 				}
 		}
 		translate([cle*size,0,0])
-			basehex(baseheight,[0,60,240,300],texture);			
-		for(i=[1:size-1]) {
-			translate([cle*i-(cle/2),(hexheight*.75),0])
-				if(i==1) {
-					basehex(baseheight,[60,120,180],texture);
-				} else {
-					basehex(baseheight,[60,120],texture);
-				}
-		}
+			basehex(baseheight,[0,60,240,300],texture);
+		if(size > 2)	{		
+			for(i=[1:size-1]) {
+				translate([cle*i-(cle/2),(hexheight*.75),0])
+					if(i==1) {
+						basehex(baseheight,[60,120,180],texture);
+					} else {
+						basehex(baseheight,[60,120],texture);
+					}
+			}
+			translate([cle*size-(cle/2),(hexheight*.75),0])
+				basehex(baseheight,[0,60,120],texture);
+		}	
 		translate([cle*size-(cle/2),(hexheight*.75),0])
-			basehex(baseheight,[0,60,120],texture);				
-		 
+			basehex(baseheight,[0,60,120,180],texture);		 
 	}
 }
+
+//
+// oneRow() This module will produce one row of Hexes
+//    size - the number of hexes in the smaller row - Larger row will have one more.
+//		baseheight - height of the tile without the texture.
+//		texture - reference to an STL file that needs to conform to requirements to be 
+//							placed on top of each hex.
+
+
+module oneRow(size,baseheight=3.8,texture="") {
+
+	union() {
+		for(i=[0:size-1]) {
+			translate([cle*i,0,0])
+				if(i==0) {
+					basehex(baseheight,[60,120,180,240,300],texture);
+				} else {
+					basehex(baseheight,[60,120,240,300],texture);
+				}
+		}
+		translate([cle*size,0,0])
+			basehex(baseheight,[0,60,120,240,300],texture);		
+ 	}
+}
+
 
 //
 // module connector()
@@ -137,7 +264,7 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 				} 
 			
 			// Apply Texture or smooth terrain
-			if( texture != "") {
+			if( texture != "" && texture != "cracks") {
 				translate([0,0,baseheight])
 					scale([cle,cle,cle])
 				    	import (texture);
@@ -153,10 +280,20 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 			}
 		}
 		connector_cutouts(10,connectors);
-		if( texture != "") {
-			translate ([-20,-20,baseheight+1.2])
-				scale ([.5,.5,.5])
-			       import (texture, convexity=10);
+		if( texture == "cracks") {
+			minkowski() {
+				r1 = rands(0,5,1);
+					rotate([0,0,(r1[0]*60)])
+						translate([-20,-20,baseheight])
+							crack_maker(0,0,3,2.5,40,40,1,0);
+						cube(size=.5);
+				}
+		} else {
+			if( texture != "") {
+				translate ([-20,-20,baseheight+1.2])
+					scale ([.5,.5,.5])
+				       import (texture, convexity=10);
+			}
 		}
 	} 
 }
@@ -201,7 +338,6 @@ module BaseTerrainMaker (baseheight=2.8, connectors=[0:60:300], texture="") {
 
 	cle = 33;
 
-	difference () {
 		union() {
 			hull() {
 				translate([0,0,(baseheight+.4)/2])
@@ -210,7 +346,6 @@ module BaseTerrainMaker (baseheight=2.8, connectors=[0:60:300], texture="") {
 					Hexagon(cle=cle-4,h=baseheight+1);
 			} 
 		}
-	} 
 }
 
 
@@ -248,3 +383,27 @@ module Hexagon(cle,h)
 function cot(x)=1/tan(x);
 
 //==EOF=======================================================
+
+module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,crack_width=.5,i=0) {
+
+    x1 = rands((x_len>0 ? x : x+x_len),
+                (x_len>0 ? x+x_len : x),1);
+    y1 = rands((y_len>0 ? y : y+y_len),
+                (y_len>0 ? y+y_len : y),1);
+
+    branch = rands(1,100,1);
+   if(branch[0]<5 && i==0) { 
+              crack_maker (x,y,x_len,-y_len,x_total_length,y_total_length,crack_width,1);
+    }
+    if(branch[0]>95 && i==0) { 
+              crack_maker (x,y,-x_len,y_len,x_total_length,y_total_length,crack_width,1);
+    }
+
+    linear_extrude(1)
+        polygon(points=[[x,y],[x,y-crack_width],[x1[0],y1[0]-crack_width],[x1[0],y1[0]]]);
+
+    if(x1[0] < x_total_length && y1[0] < y_total_length && y1[0] > 0 && x1[0]> 0) {
+  
+         crack_maker(x1[0],y1[0],x_len,y_len,x_total_length,y_total_length,crack_width,i);
+     }
+}

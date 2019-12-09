@@ -92,11 +92,11 @@ module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,
                 (y_len>0 ? y+y_len : y),1);
 
     branch = rands(1,100,1);
-   if(branch[0]<4-j) { 
+   if(branch[0]<4 && i==0 && j==0) { 
       echo ("new branch");
               crack_maker (x,y,x_len,-y_len,x_total_length,y_total_length,crack_width,i,j+1);
     }
-    if(branch[0]>96+i) { 
+    if(branch[0]>96 && i==0 && j==0) { 
       echo ("new branch");
               crack_maker (x,y,-x_len,y_len,x_total_length,y_total_length,crack_width,i+1,j);
     }
