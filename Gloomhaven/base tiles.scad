@@ -18,7 +18,7 @@
  */
 
 
-$fn = 25 ;			// OpenSCAD Resolution
+$fn = 15;			// OpenSCAD Resolution
 
 
 // These need to stay in sync from hex tile to connector !! 
@@ -29,17 +29,26 @@ connector_diameter = 2.6;
 
 
 
+
 baseheight=3.6;
 cle = 33;
 hexheight=38.11;
 
+color("Red")
+connector(slop=1);
 
-twoRow(2, 3.8, texture="4 plank dutchmogul terrain.stl");
+//	translate ([10,0,0])
+	//	ball_connector();
+	//
+	//		basehex(baseheight,[0,60,120,180,240,300],"");
+
+
+//twoRow(2, 3.8, texture="4 plank dutchmogul terrain.stl");
 
 //woodPlankMaker();
 
 module woodPlankMaker() {
-
+ 
 	scale([1/cle,1/cle,1/cle])
 	translate([0,0,-3.5])
 	intersection() {
@@ -88,7 +97,7 @@ module twoRow(size,baseheight=3.8,texture="") {
 		}
 		translate([cle*size-(cle/2),(hexheight*.75),0])
 			basehex(baseheight,[0,60,120],texture);				
-		 
+
 	}
 }
 
@@ -98,29 +107,60 @@ module twoRow(size,baseheight=3.8,texture="") {
 //
 
 
-module connector(center=3.4,diameter=3) {
+module ball_connector(center=3.4,diameter=3,slop=0.6,baseheight=3.8,cle=33) {
 
-	height = 1.8;
-	shaft_length = 6;
-	slop = 0.4;
+	shaft_height = 1.8;
+	shaft_length = 6+slop/2;
+	sphere_x_y = cle/4;  // TODO: this needs to key of CLE for scaling
+	union () {
 
-					union () {
-						for(i=[0:1]) {
-						intersection () {
-							translate([(center*2+shaft_length)*i,0,1])
-							rotate_extrude(convexity=10)
-								translate ([center,0,0])
-									circle (d=diameter-slop);
-								linear_extrude(height)
-									translate ([-10+(center*2+shaft_length)*i,-10,0])
-										square(size=20);
-									}
-								}
+		// Two squashed donuts
+		for(i=[0:1]) {
+			intersection () {
+				translate([(center*2+shaft_length)*i,0,1.6])
+					scale([sphere_x_y,sphere_x_y,baseheight*1.2])
+						sphere(d=1);
+				linear_extrude(baseheight)
+					translate ([-10+(center*2+shaft_length)*i,-10,0])
+						square(size=20);
+			}
+		}
 
-						linear_extrude(1.8)
-							translate([center,(-diameter+slop)/2,0])
-								square([shaft_length,diameter-slop]);
-					}	
+		// Shaft Here
+		linear_extrude(shaft_height)
+			translate([center-1.4,(-diameter+slop)/2,0])
+				square([shaft_length*1.4,diameter-slop/2-.4]);
+	}	
+}
+
+
+module connector(center=3.4,diameter=3,slop=0.6) {
+
+	height = 2;
+	shaft_length = 6+slop/2;
+
+
+	union () {
+
+		// Two squashed donuts
+		for(i=[0:1]) {
+			intersection () {
+				translate([(center*2+shaft_length)*i,0,1])
+					scale([1,1,slop])
+					rotate_extrude(convexity=10)
+						translate ([center,0,0])
+							circle (d=diameter-slop);
+				linear_extrude(height)
+					translate ([-10+(center*2+shaft_length)*i,-10,0])
+						square(size=20);
+			}
+		}
+
+		// Shart Here
+		linear_extrude(height-slop/2)
+				translate([center,(-diameter+slop)/2,0])
+					square([shaft_length,diameter-slop/2-.4]);
+	}	
 }
 
 module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
@@ -152,7 +192,7 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 				}
 			}
 		}
-		connector_cutouts(10,connectors);
+		ball_connector_cutouts(10,connectors);
 		if( texture != "") {
 			translate ([-20,-20,baseheight+1.2])
 				scale ([.5,.5,.5])
@@ -160,6 +200,44 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 		}
 	} 
 }
+
+
+ module ball_connector_cutouts (size,connectors) {
+
+	diameter = 3;	
+	ball_xy = cle/3.4;
+	ball_z = 4.2;
+
+		for (i=[0:60:300]) {
+			if(invector(i,connectors)) {
+				rotate([0,0,i])
+					translate ([size,0,0])
+						union () {
+							intersection () {
+								translate([0,0,0.8])
+									scale([ball_xy,ball_xy,ball_z])
+										sphere (d=1);
+									linear_extrude(baseheight+0.4)
+										translate ([-10,-10,0])
+											square(size=20);
+							}
+							linear_extrude(2.2)
+								translate([diameter,-1.6,0])
+									square([4,3.2]);
+						}
+			} else {
+				// Dimple
+				rotate([0,0,i])
+					translate([10,0,0])
+						scale([1.4,1.4,1])
+							sphere (r = baseheight-.5);
+			}
+
+		}
+		scale([1.4,1.4,1])
+			sphere (r = baseheight-.5);
+}
+
 
 module connector_cutouts (size,connectors) {
 
@@ -195,7 +273,6 @@ module connector_cutouts (size,connectors) {
 						scale([1.4,1.4,1])
 								sphere (r = baseheight-.5);
 }
-
 
 module BaseTerrainMaker (baseheight=2.8, connectors=[0:60:300], texture="") {
 
