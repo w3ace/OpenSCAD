@@ -57,9 +57,10 @@ hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on
 //color("Red")
 //	connector(slop=1);
 
-	basehex(baseheight,[0,60,120,180,240,300],"");
-	//oneRow (5,baseheight,"cracks");
-//	threeRow (3,baseheight,"cracks",0);
+	//basehex(baseheight,[0,60,120,180,240,300],"cracks");
+//	oneRow (2,baseheight,"cracks");
+	twoRow (2,baseheight,"cracks");
+	//threeRow (3,baseheight,"cracks",0);
 
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
