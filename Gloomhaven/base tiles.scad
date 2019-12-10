@@ -26,14 +26,12 @@
 
  */
 
-
-
-//  ██╗███╗   ██╗██╗████████╗     ██╗██╗ 
-//  ██║████╗  ██║██║╚══██╔══╝    ██╔╝╚██╗
-//  ██║██╔██╗ ██║██║   ██║       ██║  ██║
-//  ██║██║╚██╗██║██║   ██║       ██║  ██║
-//  ██║██║ ╚████║██║   ██║       ╚██╗██╔╝
-//  ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝        ╚═╝╚═╝ 
+//  ██╗ ███╗   ██╗ ██╗ ████████╗     ██╗  ██╗ 
+//  ██║ ████╗  ██║ ██║ ╚══██╔══╝    ██╔╝  ╚██╗
+//  ██║ ██╔██╗ ██║ ██║    ██║       ██║    ██║
+//  ██║ ██║╚██╗██║ ██║    ██║       ██║    ██║
+//  ██║ ██║ ╚████║ ██║    ██║       ╚██╗  ██╔╝
+//  ╚═╝ ╚═╝  ╚═══╝ ╚═╝    ╚═╝        ╚═╝  ╚═╝ 
 //                                       
 
 $fn = 25 ;			// OpenSCAD Resolution
@@ -51,12 +49,27 @@ cle = 33;					// 33mm per side for Gloomhaven Tiles
 hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on hex plates
 
 
-color("Red")
+//color("Red")
 //	connector(slop=1);
 
-	basehex(baseheight,[0,60,120,180,240,300],"cracks");
+//	basehex(baseheight,[0,60,120,180,240,300],"");
 	//oneRow (5,baseheight,"cracks");
-	//threeRow (3,baseheight,"cracks",0);
+	threeRow (3,baseheight,"cracks",0);
+
+
+//  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
+//  ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+//  █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
+//  ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
+//  ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
+//  ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+//                                                                            
+
+
+function invector (value,vector,i=0) = 
+	(value==vector[i] ? 1 : (i==len(vector) ? 0 : 0 + invector(value,vector,i+1))); 
+
+function cot(x)=1/tan(x);
 
 
 
@@ -163,7 +176,7 @@ module threeRow(size,baseheight=3.8,texture="",midrow=0) {
 		for(i=[midrow:size-1]) {
 			translate([cle*i,hexheight*.75,0])
 				if(i==0) {
-					basehex(baseheight,(midrow==0) ? [60,120,180] : [180],texture);
+					basehex(baseheight,(midrow==0) ? [120,180,240] : [180],texture);
 				} else {
 					basehex(baseheight,[],texture);
 				}
@@ -199,48 +212,65 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 
 	cle = 33;
 
-	 difference () {
-		union() {
-			hull() {
-				translate([0,0,(baseheight/2)])
-					Hexagon(cle=cle-.6,h=baseheight);
-				translate([0,0,baseheight/2+.4])
-					Hexagon(cle=cle,h=baseheight-.8);
-				} 
-			
-			// Apply Texture or smooth terrain
-			if( texture != "" && texture != "cracks") {
-				translate([0,0,baseheight])
-					scale([cle,cle,cle])
-				    	import (texture);
-			} else {
+	union () {
+		difference () {
+			union() {
 				hull() {
-					translate([0,0,(baseheight+.6)/2])
-						Hexagon(cle=cle-1,h=baseheight+.6);
-					translate([0,0,(baseheight+1.6)/2])
-						Hexagon(cle=cle-4,h=baseheight+1.6);
+					translate([0,0,(baseheight/2)])
+						Hexagon(cle=cle-.6,h=baseheight);
+					translate([0,0,baseheight/2+.4])
+						Hexagon(cle=cle,h=baseheight-.8);
+					} 
+				
+				// Apply Texture or smooth terrain
+				if( texture != "" && texture != "cracks") {
+					translate([0,0,baseheight])
+						scale([cle,cle,cle])
+					    	import (texture);
+				} else {
+					hull() {
+						translate([0,0,(baseheight+.6)/2])
+							Hexagon(cle=cle-1,h=baseheight+.6);
+						translate([0,0,(baseheight+1.6)/2])
+							Hexagon(cle=cle-4,h=baseheight+1.6);
 
 
+					}
+				}
+
+
+
+			}
+			connector_cutouts(10,connectors);
+			if( texture == "cracks") {
+				minkowski() {
+					r1 = rands(0,5,1);
+						rotate([0,0,(r1[0]*60)])
+							translate([-20,-20,baseheight+.6])
+								crack_maker(0,0,3,2.5,40,40,1,0);
+							cube(size=.5);
+					}
+			} else {
+				if( texture != "") {
+					translate ([-20,-20,baseheight+1.2])
+						scale ([.5,.5,.5])
+					       import (texture, convexity=10);
 				}
 			}
-		}
-		connector_cutouts(10,connectors);
-		if( texture == "cracks") {
-			minkowski() {
-				r1 = rands(0,5,1);
-					rotate([0,0,(r1[0]*60)])
-						translate([-20,-20,baseheight+.6])
-							crack_maker(0,0,3,2.5,40,40,1,0);
-						cube(size=.5);
+		} 
+
+
+		// First Layer Tie Downs
+
+		if (supports == 1) {
+			linear_extrude(.3)
+				difference() {
+					circle(r=11);
+					circle(r=10.4);
 				}
-		} else {
-			if( texture != "") {
-				translate ([-20,-20,baseheight+1.2])
-					scale ([.5,.5,.5])
-				       import (texture, convexity=10);
-			}
 		}
-	} 
+
+	}
 }
 
 //------------------------------------------------------------
@@ -302,10 +332,12 @@ module connector(center=3.4,diameter=3,slop=0.6) {
 			}
 		}
 
-		// Shart Here
-		linear_extrude(height-slop/2)
+		// Shaft Here
+		union () {
+			linear_extrude(height-slop/2)
 				translate([center,(-diameter+slop)/2,0])
 					square([shaft_length,diameter-slop/2-.4]);
+				}
 	}	
 }
 
@@ -333,9 +365,9 @@ module connector_cutouts (size,connectors) {
 										translate ([-10,-10,0])
 											square(size=20);
 							}
-							linear_extrude(1.8)
-								translate([diameter,-1.6,0])
-									square([4,3.2]);
+								linear_extrude(1.8)
+									translate([diameter,-1.6,0])
+										square([4,3.2]);
 						}
 
 			} else {
@@ -470,24 +502,3 @@ module BaseTerrainMaker (baseheight=2.8, connectors=[0:60:300], texture="") {
 		}
 }
 
-
-
-
-
-
-//  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
-//  ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
-//  █████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║███████╗
-//  ██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║╚════██║
-//  ██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║███████║
-//  ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
-//                                                                            
-
-
-
-
-
-function invector (value,vector,i=0) = 
-	(value==vector[i] ? 1 : (i==len(vector) ? 0 : 0 + invector(value,vector,i+1))); 
-
-function cot(x)=1/tan(x);
