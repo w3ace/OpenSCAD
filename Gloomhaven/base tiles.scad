@@ -1,5 +1,5 @@
 /*
- * Base Tiles - Hexagon Dungeon Tiles
+ * Base Tiles - hexagon Dungeon Tiles
  * By Craig Wood
  *
  *    ▄▄▄█████▓ ██░ ██  ██▓ ███▄    █    ▓█████▄  █    ██  ███▄    █   ▄████ ▓█████  ▒█████   ███▄    █ 
@@ -42,6 +42,11 @@ $fn = 25 ;			// OpenSCAD Resolution
 connector_center = 3.4;
 connector_diameter = 2.6;
 
+// Supports add a thin line that should tie down the first layer of the columns for
+// the Cutouts
+
+supports = 1; //[0:1]
+
 // Hex Sizes
 
 baseheight=2.4;  	// Produces a 4mm tile 
@@ -52,9 +57,9 @@ hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on
 //color("Red")
 //	connector(slop=1);
 
-//	basehex(baseheight,[0,60,120,180,240,300],"");
+	basehex(baseheight,[0,60,120,180,240,300],"");
 	//oneRow (5,baseheight,"cracks");
-	threeRow (3,baseheight,"cracks",0);
+//	threeRow (3,baseheight,"cracks",0);
 
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
@@ -217,9 +222,9 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 			union() {
 				hull() {
 					translate([0,0,(baseheight/2)])
-						Hexagon(cle=cle-.6,h=baseheight);
+						hexagon(cle=cle-.6,h=baseheight);
 					translate([0,0,baseheight/2+.4])
-						Hexagon(cle=cle,h=baseheight-.8);
+						hexagon(cle=cle,h=baseheight-.8);
 					} 
 				
 				// Apply Texture or smooth terrain
@@ -230,15 +235,13 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 				} else {
 					hull() {
 						translate([0,0,(baseheight+.6)/2])
-							Hexagon(cle=cle-1,h=baseheight+.6);
+							hexagon(cle=cle-1,h=baseheight+.6);
 						translate([0,0,(baseheight+1.6)/2])
-							Hexagon(cle=cle-4,h=baseheight+1.6);
+							hexagon(cle=cle-4,h=baseheight+1.6);
 
 
 					}
 				}
-
-
 
 			}
 			connector_cutouts(10,connectors);
@@ -259,11 +262,10 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 			}
 		} 
 
-
 		// First Layer Tie Downs
 
 		if (supports == 1) {
-			linear_extrude(.3)
+			linear_extrude(0.2)
 				difference() {
 					circle(r=11);
 					circle(r=10.4);
@@ -273,12 +275,8 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 	}
 }
 
-//------------------------------------------------------------
-// Hexagone
-// cle	écart, ex: clé de 12 alors cle=12
-// h		hauteur
-//------------------------------------------------------------
-module Hexagon(cle,h)
+
+module hexagon(cle,h)
 {
 	angle = 360/6;		// 6 pans
 	cote = cle * cot(angle);
@@ -348,7 +346,7 @@ module connector_cutouts (size,connectors) {
 	diameter = 3;
 	center = 3.4;
 
-		// Loop through the size sides of the Hexagon and if it is a parameterized
+		// Loop through the size sides of the hexagon and if it is a parameterized
 		// connector location than build the cutout, otherwise use a dimple
 
 		for (i=[0:60:300]) {
@@ -495,9 +493,9 @@ module BaseTerrainMaker (baseheight=2.8, connectors=[0:60:300], texture="") {
 		union() {
 			hull() {
 				translate([0,0,(baseheight+.4)/2])
-					Hexagon(cle=cle-1,h=baseheight+.4);
+					hexagon(cle=cle-1,h=baseheight+.4);
 				translate([0,0,(baseheight+1)/2])
-					Hexagon(cle=cle-4,h=baseheight+1);
+					hexagon(cle=cle-4,h=baseheight+1);
 			} 
 		}
 }
