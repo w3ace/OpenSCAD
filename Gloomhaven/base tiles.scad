@@ -42,6 +42,8 @@ $fn = 25 ;			// OpenSCAD Resolution
 connector_center = 3.4;
 connector_diameter = 2.6;
 
+supports = 1;
+
 // Hex Sizes
 
 baseheight=2.4;  	// Produces a 4mm tile 
@@ -52,9 +54,10 @@ hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on
 //color("Red")
 //	connector(slop=1);
 
-//	basehex(baseheight,[0,60,120,180,240,300],"");
-	//oneRow (5,baseheight,"cracks");
-	threeRow (3,baseheight,"cracks",0);
+	//basehex(baseheight,[0,60,120,180,240,300],"cracks");
+//	oneRow (2,baseheight,"cracks");
+	twoRow (2,baseheight,"cracks");
+	//threeRow (3,baseheight,"cracks",0);
 
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
@@ -263,7 +266,7 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 		// First Layer Tie Downs
 
 		if (supports == 1) {
-			linear_extrude(.3)
+			linear_extrude(.2)
 				difference() {
 					circle(r=11);
 					circle(r=10.4);
