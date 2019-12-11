@@ -59,8 +59,9 @@ hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on
 
 	//basehex(baseheight,[0,60,120,180,240,300],"cracks");
 //	oneRow (2,baseheight,"cracks");
-	//twoRow (2,baseheight,"cracks");	
-	threeRow (2,baseheight,"cracks",1);
+	//twoRow (4,baseheight,"cracks");
+//	threeRow (2,baseheight,"cracks",1);
+	twoOneTwo(baseheight,"cracks");
 
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
@@ -184,17 +185,17 @@ module threeRow(size,baseheight=3.8,texture="",midrow=0) {
 				if(i==0) {
 					basehex(baseheight,(midrow==0) ? [120,180,240] : [180],texture);
 				} else {
-					basehex(baseheight,(midrow==1) ? [0,180] : [],texture);
+					basehex(baseheight,(midrow==1 && i==1) ? [180] : [],texture);
 				}
 		}
 		translate([cle*size,hexheight*.75,0])
-			basehex(baseheight,[0,60,300],texture);			
+			basehex(baseheight,[0,60,300],texture);
 
 		// Last row is 'size'
 		for(i=[1:size-1]) {
 			translate([cle*i-(cle/2),(hexheight*1.5),0])
 				if(i==1) {
-					basehex(baseheight, (midrow==1) ? [60,120,180,240] : [60,120,180],texture);
+					basehex(baseheight,(midrow==1) ? [60,120,180,240] : [60,120,180],texture);
 				} else {
 					basehex(baseheight,[60,120],texture);
 				}
@@ -202,6 +203,23 @@ module threeRow(size,baseheight=3.8,texture="",midrow=0) {
 		translate([cle*size-(cle/2),(hexheight*1.5),0])
 			basehex(baseheight,[0,60,120],texture);				
 	}
+}
+
+
+module twoOneTwo (baseheight=3.8,texture="",midrow=0) {
+		union() { 
+			translate([cle-(cle/2),0,0])
+					basehex(baseheight,[120,180,240,300],texture);
+			translate([cle*2-(cle/2),0,0])
+					basehex(baseheight,[0,60,240,300],texture);
+			translate([cle,hexheight*.75,0])
+					basehex(baseheight,[0,180],texture);
+			translate([cle-(cle/2),hexheight*1.5,0])
+					basehex(baseheight,[60,120,180,240],texture);
+			translate([cle*2-(cle/2),hexheight*1.5,0])
+					basehex(baseheight,[0,60,120,300],texture);
+
+		}
 }
 
 
