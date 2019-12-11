@@ -149,6 +149,9 @@ module hazard_cutout_2d (x,y,x1,y1)
 module make_shelf (num_holes,large_holes,small_holes,shelf_thickness,shelf_size,shelf_width,slop,hyp,type="middle")
 {
 
+	// TODO: THIS NEEDS TO SIMPLIFY - Possibly a width modifier param?
+
+
 	shelf_length=num_holes*large_holes*1.1+large_holes*.7+shelf_thickness*2;
 
 
