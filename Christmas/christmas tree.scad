@@ -20,12 +20,12 @@
 // CUSTOMIZER Parameters Height is the base of all scaling for the model, 
 // it refers to the overall height of the trunks
 
-height=65; // [40:10:220]
+height=70; // [40:10:220]
 
 // Thickness is the model thickness that will be used for all of the
 // Trunks and Branches.
 
-thickness=1.6; // [1:1.6:4]
+thickness=1.6; // [1:0.4:2.6]
 
 // This refers to the excess space built into the slots, less slop 
 // will make the model tighter, slop is added to model thickness
@@ -39,7 +39,6 @@ tab_radius=1; // [0.8:0.2:3]
 // decoration describes the top of the tree
 
 decoration = "Hanger"; // [Star,Hanger,None]
-
 
 // Don't print the card
 
