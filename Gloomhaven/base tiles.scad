@@ -54,14 +54,15 @@ cle = 33;					// 33mm per side for Gloomhaven Tiles
 hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on hex plates
 
 
-//color("Red")
-//	connector(slop=1);
-
-	//basehex(baseheight,[0,60,120,180,240,300],"cracks");
+color("Red")
+		connector(slop=1.2);
+//	basehex(baseheight,[0,60,120,180,240,300],"");
+//	translate([33,0,0])
+//		basehex(baseheight,[0,60,120,180,240,300],"");
 //	oneRow (2,baseheight,"cracks");
 	//twoRow (4,baseheight,"cracks");
 //	threeRow (2,baseheight,"cracks",1);
-	twoOneTwo(baseheight,"cracks");
+	//twoOneTwo(baseheight,"cracks");
 
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
@@ -197,7 +198,7 @@ module threeRow(size,baseheight=3.8,texture="",midrow=0) {
 				if(i==1) {
 					basehex(baseheight,(midrow==1) ? [60,120,180,240] : [60,120,180],texture);
 				} else {
-					basehex(baseheight,[60,120],texture);
+					basehex(baseheight,[60,120],texture); 
 				}
 		}
 		translate([cle*size-(cle/2),(hexheight*1.5),0])
@@ -338,7 +339,7 @@ module connector(center=3.4,diameter=3,slop=0.6) {
 		// Two squashed donuts
 		for(i=[0:1]) {
 			intersection () {
-				translate([(center*2+shaft_length)*i,0,1])
+				translate([(center*2+shaft_length)*i,0,slop])
 					scale([1,1,slop])
 					rotate_extrude(convexity=10)
 						translate ([center,0,0])
