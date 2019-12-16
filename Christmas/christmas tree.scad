@@ -332,11 +332,7 @@ module top_trunk (height=66, thickness=2,slop=.4)
 
 module branch (height=80, slot=75, vertices=7, x=0, y=0, thickness=2,slop=.4)
 {
-        p = vertices;
-        if (randomize == "Yes") {   // have no idea why random is not work
-            p = rands(vertices,vertices+4,1)[0];
-        }
-
+    p = (randomize == "Yes") ? rands(vertices,vertices+4,1)[0] : vertices;
 
 	// Put branch in proper location 
 	translate ([x,y,0])
