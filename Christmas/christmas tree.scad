@@ -20,17 +20,17 @@
 // CUSTOMIZER Parameters Height is the base of all scaling for the model, 
 // it refers to the overall height of the trunks
 
-height=70; // [40:10:220]
+height=70; // [40:5:220]
 
 // Thickness is the model thickness that will be used for all of the
 // Trunks and Branches.
 
-thickness=1.6; // [1:0.4:2.6]
+thickness=1.5; // [1:0.3:2.6] // 0.3mm layer height
 
 // This refers to the excess space built into the slots, less slop 
 // will make the model tighter, slop is added to model thickness
 
-slop=0.1; // [0:0.1:0.4]
+slop=0.2; // [0:0.1:0.5]  // Mammooth foot
 
 // tab_radius is the radius of the frame and the connective tissue
 
@@ -43,10 +43,23 @@ decoration = "Hanger"; // [Star,Hanger,None]
 // Don't print the card
 
 print_card="No"; // [Yes,No]
+// Star points
+
+starpoints = 4; // [4:12]
+
+// Vertices points
+
+verticespoints = 6; // [4:10]
+
+// Randomize tree
+
+randomize="No"; // [Yes,No]
+
+
 
 
 if(decoration == "Star") {
-	star(points=5,outer=5*height*.02,inner=2*height*.02,thickness=thickness);
+	star(points=starpoints,outer=5*height*.02,inner=2*height*.02,thickness=thickness);
 } else {
 	if (decoration == "Hanger")
 	{
@@ -60,11 +73,11 @@ if(decoration == "Star") {
 bottom_trunk(height=height, thickness=thickness, slop=slop);
 top_trunk(height=height, thickness=thickness, slop=slop);
 
-branch(height=height*.90, slot=height/3, vertices=7, x=height*1.3, y=height*.8, thickness=thickness, slop=slop);
-branch(height=height*.75, slot=height/3*.75, vertices=7, x=height*1.15, y=height*1.6, thickness=thickness, slop=slop);
-branch(height=height*.6, slot=height/3*.6,  vertices=6, x=height*1.1, y=height*2.3, thickness=thickness, slop=slop);
-branch(height=height*.4, slot=height/3*.4, vertices=6, x=height*.6, y=height*2.05, thickness=thickness, slop=slop);
-branch(height=height*.3, slot=height/3*.32, vertices=5, x=height*.55, y=height*1.55, thickness=thickness, slop=slop);
+branch(height=height*.90, slot=height/3, vertices=verticespoints + 2, x=height*1.3, y=height*.8, thickness=thickness, slop=slop);
+branch(height=height*.75, slot=height/3*.75, vertices=verticespoints + 2, x=height*1.15, y=height*1.6, thickness=thickness, slop=slop);
+branch(height=height*.6, slot=height/3*.6,  vertices=verticespoints + 1, x=height*1.1, y=height*2.3, thickness=thickness, slop=slop);
+branch(height=height*.4, slot=height/3*.4, vertices=verticespoints + 1, x=height*.6, y=height*2.05, thickness=thickness, slop=slop);
+branch(height=height*.3, slot=height/3*.32, vertices=verticespoints, x=height*.55, y=height*1.55, thickness=thickness, slop=slop);
 
 if (print_card == "Yes") {
 	frame(height=height,tab_radius=tab_radius);
@@ -319,7 +332,7 @@ module top_trunk (height=66, thickness=2,slop=.4)
 
 module branch (height=80, slot=75, vertices=7, x=0, y=0, thickness=2,slop=.4)
 {
-	p = rands(vertices,vertices+4,1)[0];
+    p = (randomize == "Yes") ? rands(vertices,vertices+4,1)[0] : vertices;
 
 	// Put branch in proper location 
 	translate ([x,y,0])
