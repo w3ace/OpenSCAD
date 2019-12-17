@@ -53,15 +53,30 @@ baseheight=2.4;  	// Produces a 4mm tile
 cle = 33;					// 33mm per side for Gloomhaven Tiles
 hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on hex plates
 
+//import("Water Tile Top Take 1.stl");
 
-color("Red")
-		connector(slop=1.2);
-//	basehex(baseheight,[0,60,120,180,240,300],"");
+
+
+
+/*minkowski() {
+						water_maker(0,0,4,3,40,40,1,0);
+cube(size=.4);
+}*/
+
+/*	for (i=[0:8]) {
+		translate([i*10,0,0]) {
+						water_maker(0,0,4,3,40,40,1,0);
+			}
+	}*/
+
+//color("Red")
+	//	connector(slop=1.2);
+//	basehex(baseheight,[0,60,120,180,240,300],"Water Tile Top Take 5.stl");
 //	translate([33,0,0])
 //		basehex(baseheight,[0,60,120,180,240,300],"");
-//	oneRow (2,baseheight,"cracks");
+	oneRow (3,baseheight,"Water Tile Top Take 5.stl");
 	//twoRow (4,baseheight,"cracks");
-//	threeRow (2,baseheight,"cracks",1);
+//	threeRow (2,baseheight,"Water Tile Top Take 5.stl",1);
 	//twoOneTwo(baseheight,"cracks");
 
 
@@ -249,22 +264,34 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 				
 				// Apply Texture or smooth terrain
 				if( texture != "" && texture != "cracks") {
-					translate([0,0,baseheight])
+					translate([0,0,baseheight+.4])
 						scale([cle,cle,cle])
 					    	import (texture);
-				} else {
-					hull() {
 						translate([0,0,(baseheight+.6)/2])
-							hexagon(cle=cle-1,h=baseheight+.6);
-						translate([0,0,(baseheight+1.6)/2])
-							hexagon(cle=cle-4,h=baseheight+1.6);
-
-
+							hexagon(cle=cle-1,h=baseheight+.6);							
+				} else {
+					union() {
+						if ( texture == "water") {
+							minkowski() {
+								r1 = rands(0,5,1);
+									rotate([0,0,(r1[0]*60)])
+										translate([-20,-20,baseheight+1.6])
+											water_maker(0,0,3,2.5,40,40,1,0);
+										sphere(size=.5);
+								}
+						} 
+						hull() {
+							translate([0,0,(baseheight+.6)/2])
+								hexagon(cle=cle-1,h=baseheight+.6);
+							translate([0,0,(baseheight+1.6)/2])
+								hexagon(cle=cle-4,h=baseheight+1.6);
+						}
 					}
 				}
+			}	
 
-			}
 			connector_cutouts(10,connectors);
+
 			if( texture == "cracks") {
 				minkowski() {
 					r1 = rands(0,5,1);
@@ -273,13 +300,8 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 								crack_maker(0,0,3,2.5,40,40,1,0);
 							cube(size=.5);
 					}
-			} else {
-				if( texture != "") {
-					translate ([-20,-20,baseheight+1.2])
-						scale ([.5,.5,.5])
-					       import (texture, convexity=10);
-				}
-			}
+			} 
+		
 		} 
 
 		// First Layer Tie Downs
@@ -503,6 +525,35 @@ module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,
     if(x1[0] < x_total_length && y1[0] < y_total_length && y1[0] > 0 && x1[0]> 0) {
   
          crack_maker(x1[0],y1[0],x_len,y_len,x_total_length,y_total_length,crack_width,i);
+     }
+}
+
+module water_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,crack_width=.5,i=0) {
+
+    x1 = rands((x_len>0 ? x : x+x_len),
+                (x_len>0 ? x+x_len : x),1);
+    y1 = rands((y_len>0 ? y : y+y_len),
+                (y_len>0 ? y+y_len : y),1);
+//echo (i,x,x1[0],y,y1[0],tan((x1[0]-x)/(y1[0]-y)));
+
+    branch = rands(1,100,1);
+  	if(branch[0]<8 && i<2) {
+  		water_maker (x,y,x_len,-y_len,x_total_length,y_total_length,crack_width,i+1);
+    }
+    if(branch[0]>92 && i<2) {
+    	water_maker (x,y,-x_len,y_len,x_total_length,y_total_length,crack_width,i+1);
+    }
+
+
+    translate([x,y,0])
+		rotate([0,0,atan((y-y1[0])/(x-x1[0]))])
+    	scale([cos((x1[0]-x)/(y1[0]-y))*2.5,1,1])
+	   sphere(r=crack_width);
+//    linear_extrude(1)
+  //      polygon(points=[[x,y],[x,y-crack_width],[x1[0],y1[0]-crack_width],[x1[0],y1[0]]]);
+
+    if(x1[0] < x_total_length && y1[0] < y_total_length && y1[0] > 0 && x1[0]> 0) {
+         water_maker(x1[0],y1[0],x_len,y_len,x_total_length,y_total_length,crack_width,i);
      }
 }
 
