@@ -13,8 +13,6 @@ union() {
 		z = rands(91,360,1);
 		h = rands(8,14,1);
 
-echo (x,y,z);
-
 		rotate([x[0],y[0],0])
 			cylinder(r1=.5,r2=.2,h=h[0]);
 

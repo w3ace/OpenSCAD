@@ -94,6 +94,7 @@ function invector (value,vector,i=0) =
 
 function cot(x)=1/tan(x);
 
+function sec(x)=1/cos(x);
 
 
 //  ██╗  ██╗███████╗██╗  ██╗    ██████╗ ██╗      █████╗ ████████╗███████╗███████╗

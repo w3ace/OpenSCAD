@@ -49,68 +49,73 @@ supports = 1; //[0:1]
 
 // Hex Sizes
 
-baseheight=2.4;  	// Produces a 4mm tile 
+baseheight=0;  	// Produces a 4mm tile 
 cle = 33;					// 33mm per side for Gloomhaven Tiles
 hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on hex plates
-
+hexangle = 60;
 //import("Water Tile Top Take 1.stl");
 
 
-innerhex = 8;
-x_wobble = 1;
-y_wobble = 1;
+texheight = 1;
+texsize = 8;
+xtiles = 9;
+ytiles = 9;
+wobble = 1.8;
 
 row = [
-	for(j=[0:6])
-	for (i=[0:6]) 
-		[(j%2==0) ? i*innerhex+rands(0,x_wobble,1)[0]:(innerhex/2)+i*innerhex+rands(0,x_wobble,1)[0],
-			j*cot(innerhex)+rands(0,y_wobble,1)[0],0]
-	];
-echo (row);
+	for(j=[0:xtiles]) 
+			for (i=[0:ytiles])
+				for(c=[0:1])
+					hexpoint(j,i,texheight,texsize,wobble,c)
+		];
 
-for(i=[0:48]) {
-	translate (row[i]) {
-		hexagon(8,2);
-		translate([0,0,2])
-			color("Red")
-				sphere(0.5);
+
+intersection () {
+	hull() {
+							translate([0,0,(baseheight+.6)/2])
+								hexagon(cle=cle-1,h=baseheight+.6);
+							translate([0,0,(baseheight+1.6)/2])
+								hexagon(cle=cle-4,h=baseheight+1.6);
+							}
+	translate([-20,-40,0])
+		rotate([0,0,20])
+			union() {
+				for(j=[0:(xtiles-2)])
+				 for(i=[1:(ytiles-2)])
+					polyFromGrid(row,j,i,wobble);
 			}
 }
 
-for(i=[0:34]) {
-	echo (row[i],row[i+14]);
-	translate([row[i][0]+(row[i+14][0]-row[i][0])/3,
-		row[i][1]+(row[i+14][1]-row[i][1])/3,2])
-	color("Blue")
-		sphere(0.5);
-	translate([row[i][0]+(row[i+8][0]-row[i][0])/3,
-		row[i][1]+(row[i+8][1]-row[i][1])/3,2])
-	color("Green")
-		sphere(0.5);
+function hexpoint (j=0,i=0,height=1,size=1,wobble=0,c=0) = 
+	(c==0)  
+		? [hexx(j,i,size)-(size/2)+rands(0,wobble,1)[0],hexy(j,i,size)+rands(0,wobble,1)[0]+(size/2*tan(hexangle/2))] 
+		: [hexx(j,i,size)+rands(0,wobble,1)[0],hexy(j,i,size)+rands(0,wobble,1)[0]+(size/2*sec(hexangle/2))];
+
+function hexx (j=0,i=0,size=1) =
+	(j%2==0) ? i*size : (size/2)+i*size;
+
+function hexy (j=0,i=0,size=1) = j*size*sin(hexangle);
+
+function hexcenter (j=0,i=0,height=1,size=1,wobble=0) = 
+	[(j%2==0) ? i*size+rands(0,wobble,1)[0]:(size/2)+i*size+rands(0,wobble,1)[0],
+			j*size*sin(hexangle)+rands(0,wobble,1)[0],0];
+
+
+module polyFromGrid (hexpts,x,y,wobble) {
+
+	linear_extrude(height=rands(.4,.4+wobble,1)[0])
+	polygon ( 		points = [ 
+		hexpts[x*(xtiles+1)*2+y*2-((x%2==0)?1:-1)],
+		hexpts[x*(xtiles+1)*2+y*2-((x%2==0)?0:0)],
+		hexpts[x*(xtiles+1)*2+y*2-((x%2==0)?-1:1)],
+			hexpts[(x+1)*(xtiles+1)*2+y*2-((x%2==0)?0:0)],
+			hexpts[(x+1)*(xtiles+1)*2+y*2-((x%2==0)?1:-1)],
+			hexpts[(x+1)*(xtiles+1)*2+y*2-((x%2==0)?2:-2)]
+			]);
+
 }
 
-
-module random_hex () {
-	innerhex = 8;
-
-	intersection() {
-		translate([16.5,16.5,3])
-			hexagon(33,6);
-		union () {
-			translate([10,-10,0])	
-			rotate([0,0,40])
-			for (i=[0:6]) {
-				for(j=[0:6]) {
-					height = rands(0,1,1)[0];
-						translate([(j%2==0)?i*innerhex:(innerhex/2)+i*innerhex,j*cot(innerhex),height/2])		
-							wobble_hexagon(8,height,0.5);
-
-				}
-			}
-		}
-	}
-}
-
+function sec(x)=1/cos(x);
 function cot(x)=1/tan(x);
 
 module hexagon(cle,h)
@@ -122,24 +127,6 @@ module hexagon(cle,h)
 	{
 		rotate([0,0,0])
 			cube([cle,cote,h],center=true);
-		rotate([0,0,angle])
-			cube([cle,cote,h],center=true);
-		rotate([0,0,2*angle])
-			cube([cle,cote,h],center=true);
-	}
-}
-
-
-module wobble_hexagon(cle,h,wobble)
-{
-	angle = 360/6;		// 6 pans
-	cote = cle * cot(angle);
-
-	scale([1+rands(0,wobble,1)[0],1,1])
-	union()
-	{
-		rotate([0,0,0])
-				cube([cle,cote,h],center=true);
 		rotate([0,0,angle])
 			cube([cle,cote,h],center=true);
 		rotate([0,0,2*angle])
