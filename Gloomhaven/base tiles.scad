@@ -34,7 +34,7 @@
 //  ╚═╝ ╚═╝  ╚═══╝ ╚═╝    ╚═╝        ╚═╝  ╚═╝ 
 //                                       
 
-$fn = 25 ;			// OpenSCAD Resolution
+$fn = 15 ;			// OpenSCAD Resolution
 
 // These need to stay in sync from hex tile to connector !! 
 // Use slop to try and adjust one or the other
@@ -52,32 +52,22 @@ supports = 1; //[0:1]
 baseheight=2.4;  	// Produces a 4mm tile 
 cle = 33;					// 33mm per side for Gloomhaven Tiles
 hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on hex plates
+hexangle = 60;
+xtiles = 9;
+ytiles = 9;
 
-//import("Water Tile Top Take 1.stl");
 
-
-
-
-/*minkowski() {
-						water_maker(0,0,4,3,40,40,1,0);
-cube(size=.4);
-}*/
-
-/*	for (i=[0:8]) {
-		translate([i*10,0,0]) {
-						water_maker(0,0,4,3,40,40,1,0);
-			}
-	}*/
+	
 
 //color("Red")
 	//	connector(slop=1.2);
-//	basehex(baseheight,[0,60,120,180,240,300],"Water Tile Top Take 5.stl");
+	basehex(baseheight,[0,60,120,180,240,300],"wobblehex");
 //	translate([33,0,0])
 //		basehex(baseheight,[0,60,120,180,240,300],"");
 //	oneRow (3,baseheight,"Water Tile Top Take 5.stl");
 //	twoRow (1,baseheight,"Water Tile Top Take 5.stl","cracks");
 	//threeRow (1,baseheight,"Water Tile Top Take 5.stl",1);
-	twoOneTwo(baseheight,"cracks","cracks","Water Tile Top Take 5.stl");
+//	twoOneTwo(baseheight,"cracks","cracks","Water Tile Top Take 5.stl");
 //oneOneOne(baseheight,"Water Tile Top Take 5.stl");
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
@@ -95,6 +85,25 @@ function invector (value,vector,i=0) =
 function cot(x)=1/tan(x);
 
 function sec(x)=1/cos(x);
+
+function hexx (j=0,i=0,size=1) =
+	(j%2==0) ? i*size : (size/2)+i*size;
+
+function hexy (j=0,i=0,size=1) = j*size*sin(hexangle);
+
+function hexpoint (j=0,i=0,size=1,wobble=0,c=0) = 
+	(c==0)  
+		? [hexx(j,i,size)-(size/2)+rands(0,wobble,1)[0],hexy(j,i,size)+rands(0,wobble,1)[0]+(size/2*tan(hexangle/2))] 
+		: [hexx(j,i,size)+rands(0,wobble,1)[0],hexy(j,i,size)+rands(0,wobble,1)[0]+(size/2*sec(hexangle/2))];
+
+function hexgrid (xtiles,ytiles,texsize,wobble) = [
+	for(j=[0:xtiles]) 
+			for (i=[0:ytiles])
+				for(c=[0:1])
+					hexpoint(j,i,texsize,wobble,c)
+		];
+
+
 
 
 //  ██╗  ██╗███████╗██╗  ██╗    ██████╗ ██╗      █████╗ ████████╗███████╗███████╗
@@ -291,28 +300,42 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 					} 
 				
 				// Apply Texture or smooth terrain
-				if( texture != "" && texture != "cracks") {
+				if( texture != "" && texture != "cracks" && texture != "wobblehex") {
 					translate([0,0,baseheight+.4])
 						scale([cle,cle,cle])
 					    	import (texture);
 						translate([0,0,(baseheight+.6)/2])
-							hexagon(cle=cle-1,h=baseheight+.6);							
+							hexagon(cle=cle-1,h=baseheight+.6);		
 				} else {
 					union() {
-						if ( texture == "water") {
-							minkowski() {
-								r1 = rands(0,5,1);
-									rotate([0,0,(r1[0]*60)])
-										translate([-20,-20,baseheight+1.6])
-											water_maker(0,0,3,2.5,40,40,1,0);
-										sphere(size=.5);
+						if ( texture == "wobblehex") {
+								row = hexgrid(9,9,8,1.4);
+							intersection () {
+								hull() {
+									translate([0,0,(baseheight+.6)/2])
+										hexagon(cle=cle-1,h=baseheight+.6);
+									translate([0,0,(baseheight+1.6)/2])
+										hexagon(cle=cle-4,h=baseheight+1.6);
 								}
-						} 
-						hull() {
-							translate([0,0,(baseheight+.6)/2])
-								hexagon(cle=cle-1,h=baseheight+.6);
-							translate([0,0,(baseheight+1.6)/2])
-								hexagon(cle=cle-4,h=baseheight+1.6);
+								translate([-20,-40,baseheight])
+									rotate([0,0,20])
+										union() {
+											for(j=[0:7])
+											 for(i=[1:7])
+											 	hull() { 
+											 		scale ([.95,.95,1.1])
+														polyFromGrid(row,j,i,.8);
+													polyFromGrid(row,j,i,.8);
+												}
+										} 
+							}
+						} else {
+							hull() {
+								translate([0,0,(baseheight+.6)/2])
+									hexagon(cle=cle-1,h=baseheight+.6);
+								translate([0,0,(baseheight+1.6)/2])
+									hexagon(cle=cle-4,h=baseheight+1.6);
+							}
 						}
 					}
 				}
@@ -556,46 +579,17 @@ module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,
      }
 }
 
-module water_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,crack_width=.5,i=0) {
-
-    x1 = rands((x_len>0 ? x : x+x_len),
-                (x_len>0 ? x+x_len : x),1);
-    y1 = rands((y_len>0 ? y : y+y_len),
-                (y_len>0 ? y+y_len : y),1);
-//echo (i,x,x1[0],y,y1[0],tan((x1[0]-x)/(y1[0]-y)));
-
-    branch = rands(1,100,1);
-  	if(branch[0]<8 && i<2) {
-  		water_maker (x,y,x_len,-y_len,x_total_length,y_total_length,crack_width,i+1);
-    }
-    if(branch[0]>92 && i<2) {
-    	water_maker (x,y,-x_len,y_len,x_total_length,y_total_length,crack_width,i+1);
-    }
 
 
-    translate([x,y,0])
-		rotate([0,0,atan((y-y1[0])/(x-x1[0]))])
-    	scale([cos((x1[0]-x)/(y1[0]-y))*2.5,1,1])
-	   sphere(r=crack_width);
-//    linear_extrude(1)
-  //      polygon(points=[[x,y],[x,y-crack_width],[x1[0],y1[0]-crack_width],[x1[0],y1[0]]]);
+module polyFromGrid (hexpts,x,y,wobble) {
 
-    if(x1[0] < x_total_length && y1[0] < y_total_length && y1[0] > 0 && x1[0]> 0) {
-         water_maker(x1[0],y1[0],x_len,y_len,x_total_length,y_total_length,crack_width,i);
-     }
-}
-
-module BaseTerrainMaker (baseheight=2.8, connectors=[0:60:300], texture="") {
-
-	cle = 33;
-
-		union() {
-			hull() {
-				translate([0,0,(baseheight+.4)/2])
-					hexagon(cle=cle-1,h=baseheight+.4);
-				translate([0,0,(baseheight+1)/2])
-					hexagon(cle=cle-4,h=baseheight+1);
-			} 
-		}
+	linear_extrude(height=rands(.4,.4+wobble,1)[0])
+	polygon ( points = [ 
+		hexpts[x*(xtiles+1)*2+y*2-((x%2==0)?1:-1)],
+		hexpts[x*(xtiles+1)*2+y*2-((x%2==0)?0:0)],
+		hexpts[x*(xtiles+1)*2+y*2-((x%2==0)?-1:1)],
+		hexpts[(x+1)*(xtiles+1)*2+y*2-((x%2==0)?0:0)],
+		hexpts[(x+1)*(xtiles+1)*2+y*2-((x%2==0)?1:-1)],
+		hexpts[(x+1)*(xtiles+1)*2+y*2-((x%2==0)?2:-2)] ]);
 }
 
