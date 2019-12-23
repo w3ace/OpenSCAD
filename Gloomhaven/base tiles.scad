@@ -74,11 +74,11 @@ cube(size=.4);
 //	basehex(baseheight,[0,60,120,180,240,300],"Water Tile Top Take 5.stl");
 //	translate([33,0,0])
 //		basehex(baseheight,[0,60,120,180,240,300],"");
-	oneRow (3,baseheight,"Water Tile Top Take 5.stl");
-	//twoRow (4,baseheight,"cracks");
-//	threeRow (2,baseheight,"Water Tile Top Take 5.stl",1);
-	//twoOneTwo(baseheight,"cracks");
-
+//	oneRow (3,baseheight,"Water Tile Top Take 5.stl");
+//	twoRow (1,baseheight,"Water Tile Top Take 5.stl","cracks");
+	//threeRow (1,baseheight,"Water Tile Top Take 5.stl",1);
+	twoOneTwo(baseheight,"cracks","cracks","Water Tile Top Take 5.stl");
+//oneOneOne(baseheight,"Water Tile Top Take 5.stl");
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
 //  ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
@@ -139,8 +139,9 @@ module oneRow(size,baseheight=3.8,texture="") {
 //		texture - reference to an STL file that needs to conform to requirements to be 
 //							placed on top of each hex.
 
-module twoRow(size=2,baseheight=3.8,texture="") {
+module twoRow(size=2,baseheight=3.8,texture="",texture2="") {
 
+	texture2 = (texture2=="") ? texture : texture2;
 	union() {
 		for(i=[0:size-1]) {
 			translate([cle*i,0,0])
@@ -156,16 +157,16 @@ module twoRow(size=2,baseheight=3.8,texture="") {
 			for(i=[1:size-1]) {
 				translate([cle*i-(cle/2),(hexheight*.75),0])
 					if(i==1) {
-						basehex(baseheight,[60,120,180],texture);
+						basehex(baseheight,[60,120,180],texture2);
 					} else {
-						basehex(baseheight,[60,120],texture);
+						basehex(baseheight,[60,120],texture2);
 					}
 			}
 			translate([cle*size-(cle/2),(hexheight*.75),0])
-				basehex(baseheight,[0,60,120],texture);
+				basehex(baseheight,[0,60,120],texture2);
 		}	else {
 			translate([cle*size-(cle/2),(hexheight*.75),0])
-				basehex(baseheight,[0,60,120,180],texture);		 
+				basehex(baseheight,[0,60,120,180],texture2);		 
 		}
 	}
 }
@@ -179,8 +180,12 @@ module twoRow(size=2,baseheight=3.8,texture="") {
 //							placed on top of each hex.
 //		midrow - [0:1] This determines the starting position of the middle row. 
 
-module threeRow(size,baseheight=3.8,texture="",midrow=0) {
+module threeRow(size,baseheight=3.8,texture="",texture2="",texture3="",midrow=0) {
 
+
+
+	texture2 = (texture2=="") ? texture : texture2;
+	texture3 = (texture2=="") ? texture : texture3;
 	union() {
 
 		// First Row is has 'size' hexes
@@ -222,21 +227,43 @@ module threeRow(size,baseheight=3.8,texture="",midrow=0) {
 }
 
 
-module twoOneTwo (baseheight=3.8,texture="",midrow=0) {
+module twoOneTwo (baseheight=3.8,texture="",texture2="",texture3="",midrow=0) {
+
+	texture2 = (texture2=="") ? texture : texture2;
+	texture3 = (texture2=="") ? texture : texture3;
+
 		union() { 
 			translate([cle-(cle/2),0,0])
 					basehex(baseheight,[120,180,240,300],texture);
 			translate([cle*2-(cle/2),0,0])
 					basehex(baseheight,[0,60,240,300],texture);
 			translate([cle,hexheight*.75,0])
-					basehex(baseheight,[0,180],texture);
+					basehex(baseheight,[0,180],texture2);
 			translate([cle-(cle/2),hexheight*1.5,0])
-					basehex(baseheight,[60,120,180,240],texture);
+					basehex(baseheight,[60,120,180,240],texture3);
 			translate([cle*2-(cle/2),hexheight*1.5,0])
-					basehex(baseheight,[0,60,120,300],texture);
+					basehex(baseheight,[0,60,120,300],texture3);
 
 		}
 }
+
+module oneOneOne (baseheight=3.8,texture="",midrow=0) {
+
+		union() { 
+			translate([cle-(cle/2),0,0])
+					basehex(baseheight,[0,120,180,240,300],texture);
+		//	translate([cle*2-(cle/2),0,0])
+		//			basehex(baseheight,[0,60,240,300],texture);
+			translate([cle,hexheight*.75,0])
+					basehex(baseheight,[0,60,180,300],texture);
+			translate([cle-(cle/2),hexheight*1.5,0])
+					basehex(baseheight,[0,60,120,180,240],texture);
+	//		translate([cle*2-(cle/2),hexheight*1.5,0])
+	//				basehex(baseheight,[0,60,120,300],texture);
+
+		}
+}
+
 
 
 //  ██████╗  █████╗ ███████╗███████╗    ██╗  ██╗███████╗██╗  ██╗
