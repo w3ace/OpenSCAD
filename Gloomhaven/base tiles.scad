@@ -45,7 +45,7 @@ connector_diameter = 2.6;
 // Supports add a thin line that should tie down the first layer of the columns for
 // the Cutouts
 
-supports = 1; //[0:1]
+supports = 0; //[0:1]
 
 // Hex Sizes
 
@@ -53,22 +53,25 @@ baseheight=2.4;  	// Produces a 4mm tile
 cle = 33;					// 33mm per side for Gloomhaven Tiles
 hexheight=38.11;	// Calculated Size of Gloomhaven Tile height for postiioning on hex plates
 hexangle = 60;
-xtiles = 9;
-ytiles = 9;
+xtiles = 7;
+ytiles = 7;
 
-
-	
+					
+			
 
 //color("Red")
 	//	connector(slop=1.2);
-	basehex(baseheight,[0,60,120,180,240,300],"wobblehex");
-//	translate([33,0,0])
-//		basehex(baseheight,[0,60,120,180,240,300],"");
-//	oneRow (3,baseheight,"Water Tile Top Take 5.stl");
-//	twoRow (1,baseheight,"Water Tile Top Take 5.stl","cracks");
-	//threeRow (1,baseheight,"Water Tile Top Take 5.stl",1);
-//	twoOneTwo(baseheight,"cracks","cracks","Water Tile Top Take 5.stl");
-//oneOneOne(baseheight,"Water Tile Top Take 5.stl");
+
+
+
+//	basehex(baseheight,[0,60,120,180,240,300],"cracks");
+//
+//	oneRow (3,baseheight,"Hex Tile Water Texture.stl");
+	twoRow (4,baseheight,"cracks");
+ //   threeRow (6,baseheight,"cracks",midrow=2);
+
+//	twoOneTwo(baseheight,texture="wobblehex");
+//oneOneOne(baseheight,"Hex Tile Water Texture.stl");
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
 //  ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
@@ -202,57 +205,58 @@ module threeRow(size,baseheight=3.8,texture="",texture2="",texture3="",midrow=0)
 		for(i=[1:size-1]) {
 			translate([cle*i-(cle/2),0,0])
 				if(i==1) {
-					basehex(baseheight,(midrow==1) ? [120,180,240,300] : [180,240,300],texture);
+					basehex(baseheight,(midrow>0) ? [120,180,240,300] : [180,240,300],texture);
 				} else {
 					basehex(baseheight,[240,300],texture);
 				}
 		}
 		translate([cle*size-(cle/2),0,0])
-			basehex(baseheight,[0,240,300],texture);				
+			basehex(baseheight,(midrow==2)?[0,60,240,300]:[0,240,300],texture);				
 
 		// Middle row is one larger than 'size'
-		for(i=[midrow:size-1]) {
+		for(i=[(midrow>0)?1:0:(midrow>1)?size-2:size-1]) {
 			translate([cle*i,hexheight*.75,0])
 				if(i==0) {
 					basehex(baseheight,(midrow==0) ? [120,180,240] : [180],texture);
 				} else {
-					basehex(baseheight,(midrow==1 && i==1) ? [180] : [],texture);
+					basehex(baseheight,(midrow>0 && i==1) ? [180] : [],texture);
 				}
 		}
-		translate([cle*size,hexheight*.75,0])
-			basehex(baseheight,[0,60,300],texture);
+		echo(midrow>1?(size-1):size);
+		translate([(midrow>1)?cle*(size-1):cle*size,hexheight*.75,0])
+			basehex(baseheight,(midrow>1)?[0]:[0,60,300],texture);
 
 		// Last row is 'size'
 		for(i=[1:size-1]) {
 			translate([cle*i-(cle/2),(hexheight*1.5),0])
 				if(i==1) {
-					basehex(baseheight,(midrow==1) ? [60,120,180,240] : [60,120,180],texture);
+					basehex(baseheight,(midrow>0) ? [60,120,180,240] : [60,120,180],texture);
 				} else {
 					basehex(baseheight,[60,120],texture); 
 				}
 		}
 		translate([cle*size-(cle/2),(hexheight*1.5),0])
-			basehex(baseheight,[0,60,120],texture);				
+			basehex(baseheight,(midrow==2)?[0,60,120,300] : [0,60,120],texture);				
 	}
 }
 
 
-module twoOneTwo (baseheight=3.8,texture="",texture2="",texture3="",midrow=0) {
+module twoOneTwo (baseheight=3.8,texture="",texture2="",texture3="") {
 
 	texture2 = (texture2=="") ? texture : texture2;
-	texture3 = (texture2=="") ? texture : texture3;
+	texture3 = (texture3=="") ? texture : texture3;
 
 		union() { 
 			translate([cle-(cle/2),0,0])
-					basehex(baseheight,[120,180,240,300],texture);
+					basehex(baseheight,[120,180,240,300],texture=texture);
 			translate([cle*2-(cle/2),0,0])
-					basehex(baseheight,[0,60,240,300],texture);
+					basehex(baseheight,[0,60,240,300],texture=texture);
 			translate([cle,hexheight*.75,0])
-					basehex(baseheight,[0,180],texture2);
+					basehex(baseheight,[0,180],texture=texture2);
 			translate([cle-(cle/2),hexheight*1.5,0])
-					basehex(baseheight,[60,120,180,240],texture3);
+					basehex(baseheight,[60,120,180,240],texture=texture3);
 			translate([cle*2-(cle/2),hexheight*1.5,0])
-					basehex(baseheight,[0,60,120,300],texture3);
+					basehex(baseheight,[0,60,120,300],texture=texture3);
 
 		}
 }
@@ -284,6 +288,29 @@ module oneOneOne (baseheight=3.8,texture="",midrow=0) {
 //  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 //                                                              
 
+module wobblehex (baseheight=2.8,){
+
+	row = hexgrid(9,9,8,1.4);
+			intersection () {
+				hull() {
+					translate([0,0,(baseheight+.6)/2])
+						hexagon(cle=cle-1,h=baseheight+.6);
+					translate([0,0,(baseheight+1.6)/2])
+						hexagon(cle=cle-4,h=baseheight+1.6);
+				}
+				translate([-20,-40,baseheight])
+					rotate([0,0,20])
+						union() {
+							for(j=[0:7])
+							 for(i=[1:7])
+							 	hull() { 
+							 		scale ([.95,.95,1.1])
+										polyFromGrid(row,j,i,.8);
+									polyFromGrid(row,j,i,.8);
+								}
+						} 
+			}
+}
 
 module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 
@@ -298,44 +325,47 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 					translate([0,0,baseheight/2+.4])
 						hexagon(cle=cle,h=baseheight-.8);
 					} 
-				
+
 				// Apply Texture or smooth terrain
 				if( texture != "" && texture != "cracks" && texture != "wobblehex") {
 					translate([0,0,baseheight+.4])
 						scale([cle,cle,cle])
 					    	import (texture);
-						translate([0,0,(baseheight+.6)/2])
-							hexagon(cle=cle-1,h=baseheight+.6);		
+					translate([0,0,(baseheight+.6)/2])
+						hexagon(cle=cle-1,h=baseheight+.6);
 				} else {
-					union() {
-						if ( texture == "wobblehex") {
-								row = hexgrid(9,9,8,1.4);
+					//  WOBBLEHEX 
+					if ( texture == "wobblehex") {
+						union () {
+							row = hexgrid(xtiles,ytiles,8.5,3);
 							intersection () {
 								hull() {
-									translate([0,0,(baseheight+.6)/2])
-										hexagon(cle=cle-1,h=baseheight+.6);
-									translate([0,0,(baseheight+1.6)/2])
-										hexagon(cle=cle-4,h=baseheight+1.6);
+									translate([0,0,baseheight+.3])
+										hexagon(cle=cle-1,h=.6);
+									translate([0,0,baseheight+.8])
+										hexagon(cle=cle-3.5,h=1.6);
 								}
-								translate([-20,-40,baseheight])
+								translate([-15,-30,baseheight])
 									rotate([0,0,20])
 										union() {
-											for(j=[0:7])
-											 for(i=[1:7])
-											 	hull() { 
-											 		scale ([.95,.95,1.1])
-														polyFromGrid(row,j,i,.8);
-													polyFromGrid(row,j,i,.8);
-												}
+											for(j=[0:(xtiles-2)])
+												for(i=[1:(ytiles-2)])
+											 		hull() {
+										 				rotate([rands(0,5,1)[0],rands(0,5,1)[0],0])
+											 				scale ([.9,.9,1])
+																polyFromGrid(row,j,i,1);
+														polyFromGrid(row,j,i,.6);
+													}
 										} 
 							}
-						} else {
-							hull() {
-								translate([0,0,(baseheight+.6)/2])
-									hexagon(cle=cle-1,h=baseheight+.6);
-								translate([0,0,(baseheight+1.6)/2])
-									hexagon(cle=cle-4,h=baseheight+1.6);
-							}
+						}
+					} else {
+						// No Texture and Difference Textures
+						hull() {
+							translate([0,0,baseheight+.3])
+								hexagon(cle=cle-1,h=.6);
+							translate([0,0,baseheight+.8])
+								hexagon(cle=cle-3.5,h=1.6);
 						}
 					}
 				}
@@ -583,7 +613,7 @@ module crack_maker (x=0,y=0,x_len=3,y_len=3,x_total_length=30,y_total_length=30,
 
 module polyFromGrid (hexpts,x,y,wobble) {
 
-	linear_extrude(height=rands(.4,.4+wobble,1)[0])
+	linear_extrude(height=rands(.8,wobble,1)[0])
 	polygon ( points = [ 
 		hexpts[x*(xtiles+1)*2+y*2-((x%2==0)?1:-1)],
 		hexpts[x*(xtiles+1)*2+y*2-((x%2==0)?0:0)],
