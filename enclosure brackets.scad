@@ -21,40 +21,48 @@
 
 $fn=20;
 
-length = 65;
-height = 30;
+length = 55;
+height = 25;
 channel = 5.4;
 wallwidth = 3;
 supportwidth = 2;
 
 width = channel+wallwidth*2;
 
+rotate([45,-35.3,0])
+cube ([30,30,30]);
+
 cham = 3;
 
-
-corner_bracket ();
+//		frame();			
+//corner_bracket ();
 
 
 module corner_bracket () {
-
-	difference () {
-		// Rotated Corner Bracket
-		translate([0,0,-16])
-			rotate([45,325,0])
-				union () {
-					difference () {
-						minkowski () {
-							frame();
-							sphere(d=cham);
-						}
-						channels();
-					}
-					supports();
+	translate([0,0,-18.5])
+		rotate([45,-35.3,0])
+			translate([0,-2.565,0])
+				difference () {
+					// Rotated Corner Bracket
+						translate([0,2.565,0])
+							union () {
+								difference () {
+									minkowski () {
+										difference() {
+												frame();
+												rotate([-35.3,45,0])
+													cube([80,80,40],center=true);
+											}
+										sphere(d=cham);
+									}
+									channels();
+								}
+								supports();
+							}
+					// Plane Cut Cube to Crop Corner
+					rotate([-35.3,45,0])
+						cube([80,80,40],center=true);
 				}
-		// Plane Cut Cube to Crop Corner
-		translate([0,0,-20])
-			cube([60,60,40],center=true);
-	}
 }
 
 
@@ -68,8 +76,8 @@ module frame () {
 			cube([length,width,height],center=false);		
 	rotate([90,0,90])
 		cube([length,width,height],center=false);	
-	translate([length/2,0,0])
-		rotate([0,270,0])
+	translate([0,width,0])
+		rotate([0,270,180])
 			cube([length,width,height],center=false);		
 		rotate([0,270,270])
 			cube([length,width,height],center=false);	
@@ -79,18 +87,18 @@ module frame () {
 module channels () { 
 
 	translate([wallwidth,wallwidth,wallwidth])
-		cube([length,channel,length]);
+		cube([length+cham,channel,length+cham]);
 	translate([width,0,0])
 		rotate([0,0,90])
 			translate([wallwidth,wallwidth,wallwidth])
-				cube([length,channel,length]);
+				cube([length+cham,channel,length+cham]);
 	translate([0,0,width])
 		rotate([270,0,0])		
 			translate([wallwidth,wallwidth,wallwidth])
-				cube([length,channel,length]);
+				cube([length+cham,channel,length+cham]);
 	rotate([90,0,90])		
 		translate([wallwidth,wallwidth,wallwidth])
-			cube([length,channel,length]);
+			cube([length+cham,channel,length+cham]);
 }
 
 
