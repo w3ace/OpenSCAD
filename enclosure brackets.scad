@@ -21,37 +21,41 @@
 
 $fn=20;
 
-length = 55;
-height = 25;
+length = 50;
+height = 40;
 channel = 5.4;
-wallwidth = 3;
+wallwidth = 1.4;
 supportwidth = 2;
+rotateconstant = 35.26;
 
 width = channel+wallwidth*2;
 
-rotate([45,-35.3,0])
-cube ([30,30,30]);
-
 cham = 3;
 
+										
 //		frame();			
-//corner_bracket ();
-
+corner_bracket ();
 
 module corner_bracket () {
+
+
 	translate([0,0,-18.5])
-		rotate([45,-35.3,0])
+		rotate([45,-rotateconstant,0])
 			translate([0,-2.565,0])
 				difference () {
+
 					// Rotated Corner Bracket
 						translate([0,2.565,0])
 							union () {
 								difference () {
 									minkowski () {
 										difference() {
-												frame();
-												rotate([-35.3,45,0])
-													cube([80,80,40],center=true);
+											frame();
+											rotate([-rotateconstant,45,0])
+												cube([80,80,40],center=true);
+											translate([36,36,43])
+												rotate([-rotateconstant,45,0])
+													cube([100,100,40],center=true);
 											}
 										sphere(d=cham);
 									}
@@ -59,8 +63,9 @@ module corner_bracket () {
 								}
 								supports();
 							}
+
 					// Plane Cut Cube to Crop Corner
-					rotate([-35.3,45,0])
+					rotate([-rotateconstant,45,0])
 						cube([80,80,40],center=true);
 				}
 }
@@ -106,13 +111,13 @@ module supports () {
 
 	translate([9,0,supportwidth*.7])
 		rotate([-45,0,0])
-			cube([length-9+cham/2,supportwidth,15]);
+			cube([length-9+cham/2,supportwidth,width*1.5]);
 	translate([supportwidth*.70,0])
 		rotate([45,0,90])	
 			translate([9,0,0])
-			cube([length-9+cham/2,supportwidth,15]);
+			cube([length-9+cham/2,supportwidth,width*1.5]);
 	translate([0,supportwidth*.7,0])
 		rotate([225,270,0])	
 			translate([9,0,0])
-			cube([length-9+cham/2,supportwidth,15]);
+			cube([length-9+cham/2,supportwidth,width*1.5]);
 }

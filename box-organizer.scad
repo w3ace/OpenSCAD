@@ -7,12 +7,21 @@ Last Modified: Nov. 22, 2016
 
 // Round Bottom is based off width and always runs the length
 
-CardBox (78,33,33.5,85,40,1.6,16,12,17,12,18,6,0);
+CardBox (25,48,40.5,32,58,1.6,16,8,17,8,18,18,0);
+/*translate([29,0,0]) 
+	CardBox (25,48,40.5,32,58,1.6,16,8,17,8,18,18,0);
+
+translate([58,0,0]) 
+	CardBox (45,48,40.5,52,58,1.6,16,8,17,8,18,18,0);
+/*
 translate([85,0,0])
 	CardBox (33,78,33.5,40,85,1.6,16,12,17,12,18,6,1);
 translate([0,210,0])
 	rotate([0,0,270])
 		CardBox (33,78,33.5,40,85,1.6,16,12,17,12,18,6,0);
+
+*/
+
 
 
 /*
@@ -42,7 +51,7 @@ module CardBox (length,width,height,outer_length,outer_width,base,bottom_len_l,t
 	top_width = bottom_width - 1.5;
 
 
-	echo ("Top Width L",top_width,top_width_l,bottom_width,bottom_width_l,outer_width,width,bottom);
+	echo ("Top Width L",top_width,top_width_l,bottom_width,bottom_width_l,outer_width,width);
 
 	FullBoxPoints = [
 	  [  0,  0,  0 ],  //0
