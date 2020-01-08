@@ -62,7 +62,7 @@ ytiles = 7;
 //color("Red")
 	//	connector(slop=1.2);
 
-threeRowNoConnectors (3,baseheight,"Sand and Rocks.stl");
+ threeRowNoConnectors (3,baseheight,"Sand and Rocks.stl");
 
 //	basehex(baseheight,[],"Sand and Rocks.stl");
 //
@@ -261,7 +261,7 @@ module threeRowNoConnectors(size,baseheight=3.8,texture="",texture2="",texture3=
 			translate([cle*i,hexheight*.75,0])
 					basehex(baseheight,[],texture);
 		}
-		
+
 		translate([(midrow>1)?cle*(size-1):cle*size,hexheight*.75,0])
 			basehex(baseheight,[],texture);
 
@@ -363,19 +363,20 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 				// Apply Texture or smooth terrain
 				if( texture != "" && texture != "cracks" && texture != "wobblehex") {
 					if (texture == "Sand and Rocks.stl") {
+						intersection () {
+							hull() {
+								translate([0,0,baseheight+.3])
+									hexagon(cle=cle-1,h=.6);
+								translate([0,0,baseheight+.8])
+									hexagon(cle=cle-3.5,h=1.6);
+							}
 
-intersection () {
-								hull() {
-									translate([0,0,baseheight+.3])
-										hexagon(cle=cle-1,h=.6);
-									translate([0,0,baseheight+.8])
-										hexagon(cle=cle-3.5,h=1.6);
-								}
-						xshift = rands(0,60,1)[0];
-						yshift = rands(40,70-abs(xshift),1)[0];
-						echo (xshift,yshift);
-						translate([-xshift,-60+yshift,baseheight+.4])
-					    	import (texture);
+							xshift = rands(-25,25,1)[0];
+							yshift = rands(0+abs(xshift),70-abs(xshift),1)[0];
+							echo (xshift,yshift);
+							rotate([0,0,rands(0,359,1)[0]])
+								translate([-35+xshift,yshift-35,baseheight+.4])
+						    		import (texture);
 					    }
 					} else {
 						translate([0,0,baseheight+.4])
