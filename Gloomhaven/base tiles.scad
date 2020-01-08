@@ -62,13 +62,13 @@ ytiles = 7;
 //color("Red")
 	//	connector(slop=1.2);
 
+threeRowNoConnectors (3,baseheight,"Sand and Rocks.stl");
 
-
-//	basehex(baseheight,[0,60,120,180,240,300],"cracks");
+//	basehex(baseheight,[],"Sand and Rocks.stl");
 //
-//	oneRow (3,baseheight,"Hex Tile Water Texture.stl");
-	twoRow (4,baseheight,"cracks");
- //   threeRow (6,baseheight,"cracks",midrow=2);
+//	oneRow (2,baseheight,"Sand and Rocks.stl");
+//	twoRow (1,baseheight,"Sand and Rocks.stl");
+  //  threeRow (6,baseheight,"Sand and Rocks.stl",midrow=2);
 
 //	twoOneTwo(baseheight,texture="wobblehex");
 //oneOneOne(baseheight,"Hex Tile Water Texture.stl");
@@ -240,6 +240,40 @@ module threeRow(size,baseheight=3.8,texture="",texture2="",texture3="",midrow=0)
 	}
 }
 
+module threeRowNoConnectors(size,baseheight=3.8,texture="",texture2="",texture3="",midrow=0) {
+
+
+
+	texture2 = (texture2=="") ? texture : texture2;
+	texture3 = (texture2=="") ? texture : texture3;
+	union() {
+
+		// First Row is has 'size' hexes
+		for(i=[1:size-1]) {
+			translate([cle*i-(cle/2),0,0])
+					basehex(baseheight,[],texture);
+		}
+		translate([cle*size-(cle/2),0,0])
+			basehex(baseheight,[],texture);				
+
+		// Middle row is one larger than 'size'
+		for(i=[(midrow>0)?1:0:(midrow>1)?size-2:size-1]) {
+			translate([cle*i,hexheight*.75,0])
+					basehex(baseheight,[],texture);
+		}
+		
+		translate([(midrow>1)?cle*(size-1):cle*size,hexheight*.75,0])
+			basehex(baseheight,[],texture);
+
+		// Last row is 'size'
+		for(i=[1:size-1]) {
+			translate([cle*i-(cle/2),(hexheight*1.5),0])
+				basehex(baseheight,[],texture); 
+		}
+		translate([cle*size-(cle/2),(hexheight*1.5),0])
+			basehex(baseheight,[],texture);				
+	}
+}
 
 module twoOneTwo (baseheight=3.8,texture="",texture2="",texture3="") {
 
@@ -328,11 +362,28 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 
 				// Apply Texture or smooth terrain
 				if( texture != "" && texture != "cracks" && texture != "wobblehex") {
-					translate([0,0,baseheight+.4])
-						scale([cle,cle,cle])
+					if (texture == "Sand and Rocks.stl") {
+
+intersection () {
+								hull() {
+									translate([0,0,baseheight+.3])
+										hexagon(cle=cle-1,h=.6);
+									translate([0,0,baseheight+.8])
+										hexagon(cle=cle-3.5,h=1.6);
+								}
+						xshift = rands(0,60,1)[0];
+						yshift = rands(40,70-abs(xshift),1)[0];
+						echo (xshift,yshift);
+						translate([-xshift,-60+yshift,baseheight+.4])
 					    	import (texture);
-					translate([0,0,(baseheight+.6)/2])
-						hexagon(cle=cle-1,h=baseheight+.6);
+					    }
+					} else {
+						translate([0,0,baseheight+.4])
+							scale((texture=="Sand and Rocks.stl") ?	[1,1,1] : [cle,cle,cle])
+						    	import (texture);
+						translate([0,0,(baseheight+.6)/2])
+							hexagon(cle=cle-1,h=baseheight+.6);
+					}
 				} else {
 					//  WOBBLEHEX 
 					if ( texture == "wobblehex") {
@@ -371,7 +422,9 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 				}
 			}	
 
-			connector_cutouts(10,connectors);
+			if(connectors != []) {
+				connector_cutouts(10,connectors);
+			}
 
 			if( texture == "cracks") {
 				minkowski() {
