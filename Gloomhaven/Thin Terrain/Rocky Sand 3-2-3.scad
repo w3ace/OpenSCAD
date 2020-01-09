@@ -56,16 +56,22 @@ hexangle = 60;
 xtiles = 7;
 ytiles = 7;
 
+					
+			
 
-//  threeRowNoConnectors (3,baseheight,"Sand and Rocks.stl",midrow=2);
-	basehex(baseheight,[0,60,120,180,240,300],"Sand and Rocks.stl");
+//color("Red")
+	//	connector(slop=1.2);
+
+// threeRowNoConnectors (3,baseheight,"Sand and Rocks.stl",midrow=2);
+
+//	basehex(baseheight,[],"Sand and Rocks.stl");
+//
 //	oneRow (2,baseheight,"Sand and Rocks.stl");
 //	twoRow (1,baseheight,"Sand and Rocks.stl");
-
-//   threeRow (3,baseheight,"Sand and Rocks.stl",midrow=2);
+   threeRow (3,baseheight,"Sand and Rocks.stl",midrow=2);
 
 //	twoOneTwo(baseheight,texture="wobblehex");
-//  oneOneOne(baseheight,"Hex Tile Water Texture.stl");
+//oneOneOne(baseheight,"Hex Tile Water Texture.stl");
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
 //  ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
@@ -356,12 +362,10 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 
 				// Apply Texture or smooth terrain
 				if( texture != "" && texture != "cracks" && texture != "wobblehex") {
-
-					// SAND with Rocks
 					if (texture == "Sand and Rocks.stl") {
 						intersection () {
 							hull() {
-								translate([0,0,baseheight])
+								translate([0,0,baseheight+.3])
 									hexagon(cle=cle-1,h=.6);
 								translate([0,0,baseheight+.8])
 									hexagon(cle=cle-3.5,h=1.6);
@@ -371,13 +375,12 @@ module basehex (baseheight=2.8, connectors=[0:60:300], texture="") {
 							yshift = rands(0+abs(xshift),70-abs(xshift),1)[0];
 						//	echo (xshift,yshift);
 							rotate([0,0,rands(0,359,1)[0]])
-								translate([-35+xshift,yshift-35,baseheight-.3])
-									scale([1,1,1.8])
-						    			import (texture);
-					   }
+								translate([-35+xshift,yshift-35,baseheight+.4])
+						    		import (texture);
+					    }
 					} else {
 						translate([0,0,baseheight+.4])
-							scale([cle,cle,cle])
+							scale((texture=="Sand and Rocks.stl") ?	[1,1,1] : [cle,cle,cle])
 						    	import (texture);
 						translate([0,0,(baseheight+.6)/2])
 							hexagon(cle=cle-1,h=baseheight+.6);
@@ -517,7 +520,7 @@ module connector(center=3.4,diameter=3,slop=0.6) {
 
 module connector_cutouts (size,connectors) {
 
-	diameter = 2.9;
+	diameter = 3;
 	center = 3.4;
 
 		// Loop through the size sides of the hexagon and if it is a parameterized
