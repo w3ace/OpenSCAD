@@ -58,11 +58,11 @@ ytiles = 7;
 
 
 //  threeRowNoConnectors (3,baseheight,"Sand and Rocks.stl",midrow=2);
-	basehex(baseheight,[0,60,120,180,240,300],"Sand and Rocks.stl");
+	// basehex(baseheight,[0,60,120,180,240,300],"Sand and Rocks.stl");
 //	oneRow (2,baseheight,"Sand and Rocks.stl");
 //	twoRow (1,baseheight,"Sand and Rocks.stl");
 
-//   threeRow (3,baseheight,"Sand and Rocks.stl",midrow=2);
+   threeRow (2,baseheight,"Sand and Rocks.stl",midrow=0);
 
 //	twoOneTwo(baseheight,texture="wobblehex");
 //  oneOneOne(baseheight,"Hex Tile Water Texture.stl");
