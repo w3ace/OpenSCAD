@@ -21,10 +21,10 @@
 
 $fn=20;
 
-length = 50;
-height = 40;
+length = 95;
+height = 35;
 channel = 5.4;
-wallwidth = 1.4;
+wallwidth = 1.2;
 supportwidth = 2;
 rotateconstant = 35.26;
 
@@ -34,7 +34,37 @@ cham = 3;
 
 										
 //		frame();			
-corner_bracket ();
+// corner_bracket ();
+
+rail();
+
+module rail() {
+
+	translate([0,0,length*.41])
+	rotate([225,0,0])
+		union() {
+			difference() {
+				minkowski() {
+					difference() {
+						union() {
+							cube([length,width,height]);
+							translate([0,height,0])
+								rotate([90,0,0])
+									cube([length,width,height]);
+						}
+						translate([-length*.5,length*.7,-height*.3])
+							rotate([45,0,0])
+								cube([length*2,width,height*2]);
+					}
+					sphere(d=cham);
+				}
+				railChannels();
+
+			}
+			railSupports();
+		}
+}
+
 
 module corner_bracket () {
 
@@ -53,7 +83,7 @@ module corner_bracket () {
 											frame();
 											rotate([-rotateconstant,45,0])
 												cube([80,80,40],center=true);
-											translate([36,36,43])
+											translate([30,30,43])
 												rotate([-rotateconstant,45,0])
 													cube([100,100,40],center=true);
 											}
@@ -107,6 +137,17 @@ module channels () {
 }
 
 
+module railChannels () { 
+
+	translate([-cham,wallwidth,wallwidth])
+		cube([length+cham*2,channel,length+cham]);
+	translate([0,0,width])
+		rotate([270,0,0])		
+			translate([-cham,wallwidth,wallwidth])
+				cube([length+cham*2,channel,length+cham]);
+}
+
+
 module supports () {
 
 	translate([9,0,supportwidth*.7])
@@ -120,4 +161,19 @@ module supports () {
 		rotate([225,270,0])	
 			translate([9,0,0])
 			cube([length-9+cham/2,supportwidth,width*1.5]);
+}
+
+
+module railSupports () {
+	translate([9,0,supportwidth*.7])
+		rotate([-45,0,0])
+			cube([length-9+cham/2,supportwidth,width*1.5]);
+/*	translate([supportwidth*.70,0])
+		rotate([45,0,90])	
+			translate([9,0,0])
+			cube([length-9+cham/2,supportwidth,width*1.5]);
+	translate([0,supportwidth*.7,0])
+		rotate([225,270,0])	
+			translate([9,0,0])
+			cube([length-9+cham/2,supportwidth,width*1.5]);*/
 }
