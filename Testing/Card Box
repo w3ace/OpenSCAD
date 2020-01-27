@@ -1,0 +1,35 @@
+$fn=40;
+
+
+
+linear_extrude (height=5)
+	hazard_cutout_2d(0,0,100,40);
+
+
+
+
+	module hazard_cutout_2d (x,y,x1,y1)
+{
+
+
+	intersection () {
+
+		polygon( points=[[x,y],[x1,y],[x1,y1],[x,y1]]);
+
+			union() {
+
+				stripe_width=(y1-y)/5;
+				for(i=[-4:((x1-x)/stripe_width)+4]) {
+					if(i % 2) {
+
+					//	echo(i);
+							polygon(points = [[x+(i+3)*stripe_width,y],[x+(i+4)*stripe_width,y],
+								[x+i*stripe_width,y1],[x+(i-1)*stripe_width,y1]]);
+
+
+				//		echo (x+(i-1)*stripe_width,y,x+i*stripe_width,y1);
+					}
+				}
+			}
+		}
+}

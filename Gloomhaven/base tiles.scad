@@ -46,6 +46,7 @@ connector_diameter = 2.6;
 // the Cutouts
 
 supports = 0; //[0:1]
+dimples = 1;  //[0:1]
 
 // Hex Sizes
 
@@ -59,13 +60,13 @@ ytiles = 7;
 
 //  threeRowNoConnectors (3,baseheight,"Sand and Rocks.stl",midrow=2);
 //	 basehex(baseheight,[0,60,120,180,240,300],"Sand and Rocks.stl");
-	oneRow (2,baseheight,"Sand and Rocks.stl");
+//	oneRow (2,baseheight,"Sand and Rocks.stl");
 //	twoRow (3,baseheight,"Sand and Rocks.stl");
 
  //  threeRow (2,baseheight,"Sand and Rocks.stl",midrow=1);
 
 //	twoOneTwo(baseheight,texture="wobblehex");
-//  oneOneOne(baseheight,"Hex Tile Water Texture.stl");
+  oneOneOne(baseheight,"Sand and Rocks.stl");
 
 //  ███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
 //  ██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
@@ -544,7 +545,7 @@ module connector_cutouts (size,connectors) {
 
 			} else {
 				// Dimple instead of connector
-				if(supports == 1)
+				if(dimples == 1)
 					rotate([0,0,i])
 						translate([10,0,0])
 							scale([1.8,1.8,.4])
@@ -552,7 +553,7 @@ module connector_cutouts (size,connectors) {
 			}
 		}
 		// Center Dimple
-		if (supports == 1)
+		if (dimples == 1)
 			translate([0,0,0])
 				scale([1.8,1.8,.4])
 					sphere (r = baseheight-.5);
