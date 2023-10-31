@@ -59,14 +59,14 @@ module brick (height,radius,rands,bpc =rands(12,45,1)[0], segments = 1, style=""
 
 
 
-module partbrick (height,radius,rands,bpc = 24, segments = 1, totalbrickpercent = rands(3,10,1)[0])
+module partbrick (height,radius,rands,bpc = 24, segments = 1, totalbrickpercent = rands(3,8,1)[0])
 {
 
     // DONE 11/2022 : make a patchy brick, clumps 4 to 10. 
 
     brickwidth = (2*radius*3.14)/bpc;
    
-    for(k=[brickwidth*.6*2:brickwidth*.6:height*.95]){
+    for(k=[brickwidth*.6*3:brickwidth*.6:height*.95]){
 
     //    echo ("K",k,height,"courses",height/brickwidth*.6,"interval",brickwidth*.6,k/(brickwidth*.6));
 
@@ -85,7 +85,7 @@ module partbrick (height,radius,rands,bpc = 24, segments = 1, totalbrickpercent 
                    rotate([0,0,location+((360/bpc)*i)])
                         translate([radius*.95,0,k+(courseoff*brickwidth*.6)])
                          color("darkgray")
-                            cube([radius*.15,(brickwidth/segments)*.9,brickwidth/2],center=true);
+                            cube([radius*.17,(brickwidth/segments)*.9,brickwidth/2],center=true);
                         
                  }
              }

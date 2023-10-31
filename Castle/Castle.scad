@@ -17,7 +17,7 @@
  * See <http://www.gnu.org/licenses/>.
  */
 
-$fn=100;
+$fn=60;
 
 include <Polygon.scad>;
 include <BezierCone.scad>;
@@ -31,14 +31,14 @@ style = [["type"],["watchtower"],["skin"],["bricked"]];
 
 function is_even(num) = (round(num)/2 == ((round(round(num)/2)))) ? 1 : 0;
 
-frand = rands(.87,1.18,400); // Random Numbers for all builds
+frand = rands(.93,1.12,400); // Random Numbers for all builds
 
-// greenfield();
+//greenfield();
 
 buildtowers();
 
 module buildtowers() {
-maxtowers = 3;
+maxtowers = 7;
     
     for (j = [0:0]) {
         for (i = [1:maxtowers]) {
@@ -84,7 +84,7 @@ module base (baseheight,baseradius,rands,bpc)
 
     if(rands[2]>1) {
         cylinder(baseheight,baseradius,baseradius);
-         brick(baseheight,baseradius,rands,bpc);
+      //   brick(baseheight,baseradius,rands,bpc);
         // Taper
         if(rands[3]>1.1) {
             translate([0,0,baseheight])
@@ -191,7 +191,8 @@ module tower (height,radius,rands,style="watchtower")
     if (style == "watchtower") {
         // Main Stair Shaft
         baseheight = round(height*.25*myrand(rands,3));
-        baseradius = (rands[1]>.9) ? round(radius*1.1*myrand(rands,2)) : 0;
+        baseradius = (rands[1]>.9) ? round(radius*myrand(rands,4)) : 0;
+
         shaftheight = round(height*rands[0]*rands[1]*rands[2]*rands[3]);
         shaftradius = round(radius);
         watchheight = (myrand(rands,2)>.9) ? round(height*.4*rands[1]) : 0 ;
@@ -200,7 +201,7 @@ module tower (height,radius,rands,style="watchtower")
         windowheight = round(height*.1*myrand(rands,3));
         windowwidth = round(radius*.5*myrand(rands,1));
         watchwindowheight=watchheight*rands(.3,.8,1)[0];
-        bpc = rands(8,25,1)[0];
+        bpc = round(rands(12,20,1)[0]);
         numwindows = round(rands(3,6,1)[0]);
         stup = round(rands(0,2,1)[0]);
         windowrand = rands[1];
@@ -212,24 +213,23 @@ module tower (height,radius,rands,style="watchtower")
              union() {
                 difference() {
                     union() {
-                        if(rands[0]>.88)
-                                base(baseheight,baseradius,rands,bpc);
+                        if(baseradius && baseradius > 0) base(baseheight,baseradius,rands,bpc);
                            color("lightgray")
                             cylinder(shaftheight,r=radius);
-                                            brick(shaftheight,shaftradius,rands,bpc); 
+              //                 brick(shaftheight,shaftradius,rands,round(bpc*(radius/shaftradius))); 
 
                     }
-                    cylinder(shaftheight,radius*.9,radius*.9);      
+                    cylinder(shaftheight,radius*.95,radius*.95);
                 }
                 watchtower(shaftheight,watchheight,height,shaftradius,watchradius,rands);   
-                translate([0,0,shaftheight])
-                    brick(watchheight,watchradius,rands,bpc);
+            //    translate([0,0,shaftheight])
+                //    brick(watchheight,watchradius,rands,round(bpc*(radius/watchradius)));
            
-                if(windowrand>1){
-                    translate([0,0,shaftheight*.40])
-                        squarewindow(windowheight,windowwidth,shaftradius*1.1,numwindows,stup,frame=1.4);
-                    squarewindow(shaftheight+watchwindowheight,windowwidth,watchradius*1.1,numwindows,frame=1.4,segments=1);
-               }
+             //  if(windowrand>1){
+               //     translate([0,0,shaftheight*.40])
+                 //      squarewindow(windowheight,windowwidth,shaftradius*1.1,numwindows,stup,frame=1.4);
+                  //  squarewindow(shaftheight+watchwindowheight,windowwidth,watchradius*1.1,numwindows,frame=1.4,segments=1);
+              // } 
            }
             union () {
                 translate([0,0,shaftheight*.4]) 
